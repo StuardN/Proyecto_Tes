@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Categorías</title>
+</head>
+<body>
+    <h1>Categorías</h1>
+
+    <!-- Formulario para agregar categoría -->
+    <form method="POST" action="{{ url_for('categorias') }}">
+        <input type="text" name="descripcion" placeholder="Descripción de la categoría" required>
+        <button type="submit">Agregar Categoría</button>
+    </form>
+
+    <h2>Lista de Categorías</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Opciones</th>
+        </tr>
+        {% for categoria in categorias %}
+        <tr>
+            <td>{{ categoria.id_categoria }}</td>
+            <td>{{ categoria.descripcion }}</td>
+            <td>{{ categoria.estado }}</td>
+            <td>
+                <a href="{{ url_for('editar_categoria', id_categoria=categoria.id_categoria) }}">Editar</a>
+                <form action="{{ url_for('eliminar_categoria', id_categoria=categoria.id_categoria) }}" method="POST" style="display:inline;">
+                    <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta categoría?');">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

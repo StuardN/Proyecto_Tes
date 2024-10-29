@@ -6,7 +6,7 @@ import datetime
 
 app = Flask(__name__)
 
-# Configuraciones de la aplicación
+# Configuración de la aplicación
 app.config['SECRET_KEY'] = 'mysecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://tesis:123456@DESKTOP-SAV0H0J\\SQLExpress/RecursosHumanos3?driver=ODBC+Driver+17+for+SQL+Server'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -45,6 +45,76 @@ class Usuario(db.Model, UserMixin):
     def get_id(self):
         return str(self.id_usuario)
 
+# Modelo de Puestos
+class Puesto(db.Model):
+    __tablename__ = 'Puestos'
+    id_puesto = db.Column(db.Integer, primary_key=True)
+    descripcion = db.Column(db.String, nullable=False)
+    perfil = db.Column(db.String)
+    requisitos = db.Column(db.String)
+    id_categoria = db.Column(db.Integer, db.ForeignKey('Categorias.id_categoria'), nullable=False)
+
+    # Relación con Categoria
+    categoria = db.relationship('Categoria', backref='puestos') 
+
+class Categoria(db.Model):
+    __tablename__ = 'Categorias'
+    id_categoria = db.Column(db.Integer, primary_key=True)
+    descripcion = db.Column(db.String(100), nullable=False)  # Ajuste para que coincida con la tabla
+    estado = db.Column(db.String(50), default='Activo')
+# Ruta para listar y crear puestos
+@app.route('/puestos', methods=['GET', 'POST'])
+@login_required
+def puestos():
+    if request.method == 'POST':
+        descripcion = request.form.get('descripcion')
+        perfil = request.form.get('perfil')
+        requisitos = request.form.get('requisitos')
+        id_categoria = request.form.get('id_categoria')
+
+        nuevo_puesto = Puesto(
+            descripcion=descripcion,
+            perfil=perfil,
+            requisitos=requisitos,
+            id_categoria=id_categoria
+        )
+        db.session.add(nuevo_puesto)
+        db.session.commit()
+        flash('Puesto creado exitosamente.')
+        return redirect(url_for('puestos'))
+
+    puestos = Puesto.query.all()
+    categorias = Categoria.query.all()
+    return render_template('puestos.html', puestos=puestos, categorias=categorias)
+
+# Ruta para eliminar un puesto
+@app.route('/eliminar_puesto/<int:id>', methods=['POST'])
+@login_required
+def eliminar_puesto(id):
+    puesto = Puesto.query.get_or_404(id)
+    db.session.delete(puesto)
+    db.session.commit()
+    flash('Puesto eliminado exitosamente.')
+    return redirect(url_for('puestos'))
+
+# Ruta para editar un puesto
+@app.route('/editar_puesto/<int:id>', methods=['GET', 'POST'])
+@login_required
+def editar_puesto(id):
+    puesto = Puesto.query.get_or_404(id)
+    if request.method == 'POST':
+        puesto.descripcion = request.form.get('descripcion')
+        puesto.perfil = request.form.get('perfil')
+        puesto.requisitos = request.form.get('requisitos')
+        puesto.id_categoria = request.form.get('id_categoria')
+
+        db.session.commit()
+        flash('Puesto actualizado exitosamente.')
+        return redirect(url_for('puestos'))
+
+    categorias = Categoria.query.all()
+    return render_template('editar_puesto.html', puesto=puesto, categorias=categorias)
+
 # Función para cargar el usuario en la sesión
 @login_manager.user_loader
 def load_user(user_id):
@@ -65,11 +135,11 @@ def login():
 
         if user and user.check_password(password):
             login_user(user)
-            if user.id_rol == 1:  # Administrador
+            if user.id_rol == 1:
                 return redirect(url_for('admin_dashboard'))
-            elif user.id_rol == 2:  # RRHH
+            elif user.id_rol == 2:
                 return redirect(url_for('rrhh_dashboard'))
-            elif user.id_rol == 3:  # Postulante
+            elif user.id_rol == 3:
                 return redirect(url_for('postulante_dashboard'))
         else:
             flash('Login incorrecto. Verifica tus credenciales.')
@@ -86,15 +156,13 @@ def register():
         password = request.form.get('password')
         direccion = request.form.get('direccion')
         celular = request.form.get('celular')
-        id_rol = 3  # Rol por defecto para nuevos usuarios: Postulante
+        id_rol = 3
 
-        # Verificar si el usuario ya existe
         existing_user = Usuario.query.filter_by(email=email).first()
         if existing_user:
             flash('El usuario ya existe. Intenta con otro correo electrónico.')
             return redirect(url_for('register'))
 
-        # Crear un nuevo usuario
         new_user = Usuario(
             nombre_usuario=nombre_usuario,
             apellidos=apellidos,
@@ -103,7 +171,7 @@ def register():
             celular=celular,
             id_rol=id_rol
         )
-        new_user.set_password(password)  # Asignar la contraseña
+        new_user.set_password(password)
 
         db.session.add(new_user)
 
@@ -122,14 +190,14 @@ def register():
 @login_required
 def admin_dashboard():
     if current_user.id_rol == 1:
-        return render_template('admin_dashboard.html')
+        return render_template('puestos.html')
     return redirect(url_for('login'))
 
 @app.route('/rrhh_dashboard')
 @login_required
 def rrhh_dashboard():
     if current_user.id_rol == 2:
-        return render_template('rrhh_dashboard.html')
+        return render_template('puestos.html')
     return redirect(url_for('login'))
 
 @app.route('/postulante_dashboard')
@@ -145,6 +213,54 @@ def postulante_dashboard():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+# CATEGORIAS
+# Ruta para crear y listar categorías
+@app.route('/categorias', methods=['GET', 'POST'])
+@login_required
+def categorias():
+    if request.method == 'POST':
+        descripcion = request.form.get('descripcion')
+        
+        # Verificación para evitar descripciones duplicadas
+        if Categoria.query.filter_by(descripcion=descripcion).first():
+            flash('La categoría ya existe.')
+            return redirect(url_for('categorias'))
+        
+        nueva_categoria = Categoria(descripcion=descripcion, estado='Activo')
+        db.session.add(nueva_categoria)
+        db.session.commit()
+        flash('Categoría creada exitosamente.')
+        return redirect(url_for('categorias'))
+
+    categorias = Categoria.query.all()
+    return render_template('categorias.html', categorias=categorias)
+
+# Ruta para editar una categoría
+@app.route('/editar_categoria/<int:id_categoria>', methods=['GET', 'POST'])
+@login_required
+def editar_categoria(id_categoria):
+    categoria = Categoria.query.get_or_404(id_categoria)
+    
+    if request.method == 'POST':
+        categoria.descripcion = request.form.get('descripcion')
+        categoria.estado = request.form.get('estado')
+        
+        db.session.commit()
+        flash('Categoría actualizada exitosamente.')
+        return redirect(url_for('categorias'))
+
+    return render_template('editar_categoria.html', categoria=categoria)
+
+# Ruta para eliminar una categoría
+@app.route('/eliminar_categoria/<int:id_categoria>', methods=['POST'])
+@login_required
+def eliminar_categoria(id_categoria):
+    categoria = Categoria.query.get_or_404(id_categoria)
+    db.session.delete(categoria)
+    db.session.commit()
+    flash('Categoría eliminada exitosamente.')
+    return redirect(url_for('categorias'))
 
 # Ejecutar la aplicación
 if __name__ == '__main__':

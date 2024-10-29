@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Puesto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Editar Puesto</h1>
+    <form action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post">
+        <div class="form-group">
+            <label for="descripcion">Descripción</label>
+            <input type="text" class="form-control" name="descripcion" value="{{ puesto.descripcion }}" required>
+        </div>
+        <div class="form-group">
+            <label for="perfil">Perfil</label>
+            <input type="text" class="form-control" name="perfil" value="{{ puesto.perfil }}">
+        </div>
+        <div class="form-group">
+            <label for="requisitos">Requisitos</label>
+            <input type="text" class="form-control" name="requisitos" value="{{ puesto.requisitos }}">
+        </div>
+        <div class="form-group">
+            <label for="id_categoria">Categoría</label>
+            <select class="form-control" name="id_categoria" required>
+                {% for categoria in categorias %}
+                    <option value="{{ categoria.id_categoria }}" {% if categoria.id_categoria == puesto.id_categoria %}selected{% endif %}>
+                        {{ categoria.descripcion }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        <a href="{{ url_for('puestos') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
