@@ -30,7 +30,7 @@ def crear_usuarios():
         nombre_admin = "Admin"
         apellidos_admin = "Usuario"
         email_admin = "admin@ejemplo.com"
-        contrasena_admin = "contraseña_admin"  # Contraseña para Administrador
+        contrasena_admin = ""  # Contraseña para Administrador
         direccion_admin = "Av. Admin 123"
         celular_admin = "1234567890"
         id_rol_admin = 1  # Rol para Administrador

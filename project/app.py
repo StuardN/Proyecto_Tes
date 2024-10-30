@@ -45,7 +45,14 @@ class Usuario(db.Model, UserMixin):
     def get_id(self):
         return str(self.id_usuario)
 
-# Modelo de Puestos
+class Categoria(db.Model):
+    __tablename__ = 'Categorias'
+    id_categoria = db.Column(db.Integer, primary_key=True)
+    descripcion = db.Column(db.String(100), nullable=False)
+    estado = db.Column(db.String(50), default='Activo')
+    # relación inversa
+    puestos = db.relationship('Puesto', backref='categoria', lazy=True)
+
 class Puesto(db.Model):
     __tablename__ = 'Puestos'
     id_puesto = db.Column(db.Integer, primary_key=True)
@@ -54,19 +61,12 @@ class Puesto(db.Model):
     requisitos = db.Column(db.String)
     id_categoria = db.Column(db.Integer, db.ForeignKey('Categorias.id_categoria'), nullable=False)
 
-    # Relación con Categoria
-    categoria = db.relationship('Categoria', backref='puestos') 
 
-class Categoria(db.Model):
-    __tablename__ = 'Categorias'
-    id_categoria = db.Column(db.Integer, primary_key=True)
-    descripcion = db.Column(db.String(100), nullable=False)  # Ajuste para que coincida con la tabla
-    estado = db.Column(db.String(50), default='Activo')
-# Ruta para listar y crear puestos
 @app.route('/puestos', methods=['GET', 'POST'])
 @login_required
 def puestos():
     if request.method == 'POST':
+        # Código para crear un nuevo puesto
         descripcion = request.form.get('descripcion')
         perfil = request.form.get('perfil')
         requisitos = request.form.get('requisitos')
@@ -83,9 +83,13 @@ def puestos():
         flash('Puesto creado exitosamente.')
         return redirect(url_for('puestos'))
 
+    # Traer todos los puestos y categorías
     puestos = Puesto.query.all()
-    categorias = Categoria.query.all()
-    return render_template('puestos.html', puestos=puestos, categorias=categorias)
+    lista_categorias = Categoria.query.all()  # Cambié el nombre a 'lista_categorias'
+    print(puestos)  # Esto debería mostrar la lista de puestos en la consola
+    print(lista_categorias)  # Esto debería mostrar la lista de categorías en la consola
+    return render_template('puestos.html', puestos=puestos, categorias=lista_categorias)
+
 
 # Ruta para eliminar un puesto
 @app.route('/eliminar_puesto/<int:id>', methods=['POST'])
@@ -257,6 +261,14 @@ def editar_categoria(id_categoria):
 @login_required
 def eliminar_categoria(id_categoria):
     categoria = Categoria.query.get_or_404(id_categoria)
+    puestos_asociados = Puesto.query.filter_by(id_categoria=id_categoria).all()
+    
+    if puestos_asociados:
+        mensaje = "No se puede eliminar la categoría porque está en uso. Puestos asociados:"
+        puestos = [p.descripcion for p in puestos_asociados]  # Asume que `descripcion` es el campo del puesto
+        return render_template("error.html", mensaje=mensaje, puestos=puestos)
+    
+    # Si no hay puestos asociados, procede a eliminar la categoría
     db.session.delete(categoria)
     db.session.commit()
     flash('Categoría eliminada exitosamente.')

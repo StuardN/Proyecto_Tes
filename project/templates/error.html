@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Error al eliminar categoría</title>
+</head>
+<body>
+    <h2>{{ mensaje }}</h2>
+    <ul>
+        {% for puesto in puestos %}
+            <li>{{ puesto }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('categorias') }}">Regresar a categorías</a>
+</body>
+</html>
