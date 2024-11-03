@@ -194,14 +194,14 @@ def register():
 @login_required
 def admin_dashboard():
     if current_user.id_rol == 1:
-        return render_template('puestos.html')
+        return render_template('admin.html')
     return redirect(url_for('login'))
 
 @app.route('/rrhh_dashboard')
 @login_required
 def rrhh_dashboard():
     if current_user.id_rol == 2:
-        return render_template('puestos.html')
+        return render_template('rrhh_index.html')
     return redirect(url_for('login'))
 
 @app.route('/postulante_dashboard')
@@ -240,6 +240,8 @@ def categorias():
     categorias = Categoria.query.all()
     return render_template('categorias.html', categorias=categorias)
 
+
+
 # Ruta para editar una categoría
 @app.route('/editar_categoria/<int:id_categoria>', methods=['GET', 'POST'])
 @login_required
@@ -273,6 +275,86 @@ def eliminar_categoria(id_categoria):
     db.session.commit()
     flash('Categoría eliminada exitosamente.')
     return redirect(url_for('categorias'))
+
+
+########################3rutas usuarios #########################
+# Ruta para ver todos los usuarios
+def obtener_usuario_por_id(id_usuario):
+    return Usuario.query.get(id_usuario)
+
+def actualizar_usuario(id_usuario, nombre, apellidos, email):
+    usuario = obtener_usuario_por_id(id_usuario)
+    if usuario:
+        usuario.nombre_usuario = nombre
+        usuario.apellidos = apellidos
+        usuario.email = email
+        db.session.commit()
+
+# Ruta para listar usuarios
+@app.route('/usuarios')
+def listar_usuarios():
+    usuarios = Usuario.query.all()
+    return render_template('_crud_user.html', usuarios=usuarios)
+
+@app.route('/usuarios/nuevo', methods=['GET', 'POST'])
+def nuevo_usuario():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        apellidos = request.form['apellidos']
+        email = request.form['email']
+        contraseña = request.form['contraseña']
+        id_rol = request.form['id_rol']
+
+        # Hash the password
+        contraseña_hash = generate_password_hash(contraseña)
+
+        nuevo_usuario = Usuario(
+            nombre_usuario=nombre,
+            apellidos=apellidos,
+            email=email,
+            contraseña=contraseña_hash,  # Use the hashed password
+            id_rol=id_rol,
+            estado='Activo'
+        )
+        db.session.add(nuevo_usuario)
+        db.session.commit()
+
+        # Use the correct endpoint name here
+        return redirect(url_for('listar_usuarios'))
+
+    return render_template('nuevo_usuario.html')
+
+# Ruta para editar un usuario
+@app.route('/usuarios/editar/<int:id_usuario>', methods=['GET', 'POST'])
+def editar_usuario(id_usuario):
+    usuario = obtener_usuario_por_id(id_usuario)
+
+    if not usuario:
+        flash('Usuario no encontrado', 'danger')
+        return redirect(url_for('listar_usuarios'))
+
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        nombre = request.form['nombre_usuario']
+        apellidos = request.form['apellidos']
+        email = request.form['email']
+
+        # Actualizar el usuario en la base de datos
+        actualizar_usuario(id_usuario, nombre, apellidos, email)
+        flash('Usuario actualizado exitosamente!', 'success')
+        return redirect(url_for('listar_usuarios'))
+
+    # Renderizar la plantilla de edición de usuario con los datos actuales
+    return render_template('editar_usuario.html', usuario=usuario)
+
+# Ruta para eliminar un usuario
+@app.route('/usuarios/eliminar/<int:id_usuario>', methods=['POST'])
+def eliminar_usuario(id_usuario):
+    usuario = Usuario.query.get_or_404(id_usuario)
+    db.session.delete(usuario)
+    db.session.commit()
+    flash('Usuario eliminado exitosamente')
+    return redirect(url_for('listar_usuarios'))
 
 # Ejecutar la aplicación
 if __name__ == '__main__':
