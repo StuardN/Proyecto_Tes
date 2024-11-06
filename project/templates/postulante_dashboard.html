@@ -1,336 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pantalla Inicio</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .job-card {
-      border: 2px solid black;
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-    }
-    footer {
-      border-top: 2px solid black;
-      padding-top: 20px;
-    }
-    .navbar {
-      background-color: #142f4d;
-      padding: 10px 20px;
-    }
-
-    .navbar-brand {
-      font-size: 1.5rem;
-      color: #fff;
-      font-weight: bold;
-    }
-
-    .navbar-nav .nav-link {
-      color: #f1f1f1;
-      padding: 10px 15px;
-      transition: color 0.3s, background-color 0.3s;
-      font-weight: 500;
-    }
-
-    .navbar-nav .nav-link:hover {
-      background-color: #1d456b;
-      color: #fff;
-      border-radius: 5px;
-    }
-
-    .btn-custom {
-      background-color: #f0a500;
-      color: white;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    .btn-custom:hover {
-      background-color: #e08e00;
-    }
-
-    /* Sticky navbar */
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    /* Mobile adjustments */
-    .navbar-toggler {
-      border: none;
-    }
-
-    .navbar-toggler-icon {
-      color: white;
-    }
-    .card-container {
-      margin: 20px 0;
-    }
-
-    .custom-card {
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s;
-    }
-
-    .custom-card img {
-      border-top-left-radius: 15px;
-      border-top-right-radius: 15px;
-      max-height: 150px;
-      object-fit: cover;
-    }
-
-    .custom-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    .custom-card .card-body {
-      padding: 15px;
-    }
-
-    .card-title {
-      font-weight: bold;
-      font-size: 1.2em;
-      margin-bottom: 10px;
-    }
-
-    .card-text {
-      font-size: 0.9em;
-      color: #555;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Dashboard del Postulante</title>
 </head>
 <body>
-
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">RPA</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="./noostros.html">Nosotros</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Postula</a></li>
+    <h1>Dashboard del Postulante</h1>
+    
+    <h2>Categorías</h2>
+    {% if categorias %}
+        <ul>
+            {% for categoria in categorias %}
+                <li>{{ categoria.descripcion }}</li>
+                <ul>
+                    {% for puesto in categorias_con_puestos[categoria.id_categoria] %}
+                        <li>{{ puesto.descripcion }}</li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
         </ul>
-        <a class="btn btn-custom" href="#">Iniciar sección</a>
-      </div>
-    </div>
-  </nav>
-
-
-  <div class="container">
-    <br>
-    <!-- Últimos puestos en informática -->
-    <h3 class="mb-4">Puestos en informática</h3>
-    <div class="row card-container">
-      
-        <div class="col-md-4">
-          <div class="card custom-card">
-            <img src="./img/python.jpg" class="card-img-top" alt="Descripción del puesto 1">
-            <div class="card-body">
-              <h5 class="card-title">Desarrollador Full Stack en Python</h5>
-              <p class="card-text">Encárgate del desarrollo completo de aplicaciones web utilizando Python y frameworks modernos como Django y Flask.</p>
-              <!-- Botón para abrir el primer modal -->
-              <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#chooseModal">Postular</a>
-            </div>
-          </div>
-        </div>
-      
-      <!-- Modal para elegir cómo postular -->
-      <div class="modal fade" id="chooseModal" tabindex="-1" aria-labelledby="chooseModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="chooseModalLabel">¿Cómo deseas enviar tu CV?</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <p>Elige una opción:</p>
-              <!-- Botón para el modal manual -->
-              <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#manualModal" data-bs-dismiss="modal">Llenar manualmente</button>
-              <!-- Botón para el modal subir CV -->
-              <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadCVModal" data-bs-dismiss="modal">Subir CV</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Modal para formulario manual -->
-      <div class="modal fade" id="manualModal" tabindex="-1" aria-labelledby="manualModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="manualModalLabel">Formulario Manual</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form>
-                <div class="mb-3">
-                  <label for="name" class="form-label">Nombre y Apellido</label>
-                  <input type="text" class="form-control" id="name">
-                </div>
-                <div class="mb-3">
-                  <label for="address" class="form-label">Dirección</label>
-                  <input type="text" class="form-control" id="address">
-                </div>
-                <div class="mb-3">
-                  <label for="job" class="form-label">Trabajo anterior</label>
-                  <input type="text" class="form-control" id="job">
-                </div>
-                <div class="mb-3">
-                  <label for="experience" class="form-label">Años de experiencia</label>
-                  <input type="number" class="form-control" id="experience">
-                </div>
-                <div class="mb-3">
-                  <label for="salary" class="form-label">Salario deseado</label>
-                  <input type="number" class="form-control" id="salary">
-                </div>
-                <div class="mb-3">
-                  <label for="skills" class="form-label">Habilidades</label>
-                  <textarea class="form-control" id="skills"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Enviar</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Modal para subir CV -->
-      <div class="modal fade" id="uploadCVModal" tabindex="-1" aria-labelledby="uploadCVModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="uploadCVModalLabel">Subir CV</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form>
-                <div class="mb-3">
-                  <label for="formFile" class="form-label">Subir archivo de CV</label>
-                  <input class="form-control" type="file" id="formFile">
-                </div>
-                <button type="submit" class="btn btn-primary">Enviar</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-     
-      <div class="col-md-4">
-        <div class="card custom-card">
-          <img src="./img/sql.jpg" class="card-img-top" alt="Descripción del puesto 2">
-          <div class="card-body">
-            <h5 class="card-title">Jr Ingeniero de Datos</h5>
-            <p class="card-text">Apoya en la construcción de pipelines de datos, optimización de bases de datos y análisis de grandes volúmenes de datos.</p>
-            <a href="#" class="btn btn-primary">Postular</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card custom-card">
-          <img src="/img/java.png" class="card-img-top" alt="Descripción del puesto 3">
-          <div class="card-body">
-            <h5 class="card-title">Desarrollador Java</h5>
-            <p class="card-text">Responsable del diseño y desarrollo de soluciones empresariales robustas utilizando Java, Spring, y otras tecnologías de backend.</p>
-            <a href="#" class="btn btn-primary">Postular</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <!-- Últimos puestos en administración -->
-    <h3 class="mb-4">Puestos en administración</h3>
-    <div class="row card-container">
-      <div class="col-md-4">
-        <div class="card custom-card">
-          <img src="/img/algo.jpg" class="card-img-top" alt="Descripción del puesto 4">
-          <div class="card-body">
-            <h5 class="card-title">Auxiliar Contable</h5>
-            <p class="card-text">Gestiona el registro de transacciones financieras, conciliaciones bancarias y el control de cuentas por cobrar y pagar.</p>
-            <a href="#" class="btn btn-primary">Postular</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card custom-card">
-          <img src="/img/finanzas.jpg" class="card-img-top" alt="Descripción del puesto 5">
-          <div class="card-body">
-            <h5 class="card-title">Jefe de Finanzas</h5>
-            <p class="card-text">Lidera la planificación financiera, análisis de riesgos y toma de decisiones estratégicas para el crecimiento de la empresa.</p>
-            <a href="#" class="btn btn-primary">Postular</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card custom-card">
-          <img src="/img/ventas.jpg" class="card-img-top" alt="Descripción del puesto 6">
-          <div class="card-body">
-            <h5 class="card-title">Jefe de Ventas</h5>
-            <p class="card-text">Dirige el equipo de ventas, establece objetivos y desarrolla estrategias para aumentar las ventas y mejorar la satisfacción del cliente.</p>
-            <a href="#" class="btn btn-primary">Postular</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-        
-      </div>
-    </div>
-  </div>
-
-  <!-- Footer -->
- <!-- Footer -->
-<footer class="mt-5 text-white" style="background-color: #142f4d; padding: 40px 0;">
-  <div class="container">
-    <div class="row">
-      <!-- Sección de descripción -->
-      <div class="col-md-6">
-        <h5>Sobre Nosotros</h5>
-        <p>
-          Somos una empresa dedicada a conectar a profesionales de diferentes áreas con oportunidades laborales. 
-          Nos especializamos en ofrecer posiciones en informática, administración, y más, facilitando el desarrollo profesional de nuestros candidatos.
-        </p>
-      </div>
-      
-      <!-- Sección de enlaces rápidos -->
-      <div class="col-md-3">
-        <h5>Enlaces Rápidos</h5>
-        <ul class="list-unstyled">
-          <li><a href="#" class="text-white">Inicio</a></li>
-          <li><a href="./noostros.html" class="text-white">Quienes Somos</a></li>
-          <li><a href="#" class="text-white">Puestos</a></li>
-          <li><a href="#" class="text-white">Contáctanos</a></li>
+    {% else %}
+        <p>No hay categorías disponibles.</p>
+    {% endif %}
+    
+    <h2>Puestos</h2>
+    {% if puestos %}
+        <ul>
+            {% for puesto in puestos %}
+                <li>{{ puesto.descripcion }}</li>
+            {% endfor %}
         </ul>
-      </div>
-      
-      <!-- Sección de contacto -->
-      <div class="col-md-3">
-        <h5>Contáctanos</h5>
-        <p>Email: info@empresa.com</p>
-        <p>Teléfono: +123 456 7890</p>
-        <a href="#" class="btn btn-outline-light btn-sm">Síguenos en redes sociales</a>
-      </div>
-    </div>
-    <hr class="bg-light">
-    <div class="row">
-      <div class="col text-center">
-        <p class="mb-0">&copy; 2024 RPA. Todos los derechos reservados.</p>
-      </div>
-    </div>
-  </div>
-</footer>
-
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% else %}
+        <p>No hay puestos disponibles.</p>
+    {% endif %}
 </body>
 </html>

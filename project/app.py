@@ -204,11 +204,28 @@ def rrhh_dashboard():
         return render_template('rrhh_index.html')
     return redirect(url_for('login'))
 
+
 @app.route('/postulante_dashboard')
 @login_required
 def postulante_dashboard():
     if current_user.id_rol == 3:
-        return render_template('postulante_dashboard.html')
+        # Obtener todos los puestos y categorías
+        puestos = Puesto.query.all()  # Obtener todos los puestos
+        categorias = Categoria.query.all()  # Obtener todas las categorías
+        
+        # Crear un diccionario donde cada categoría tiene una lista de puestos asociados
+        categorias_con_puestos = {}
+        for categoria in categorias:
+            # Filtrar los puestos que pertenecen a la categoría actual
+            categorias_con_puestos[categoria.id_categoria] = [puesto for puesto in puestos if puesto.id_categoria == categoria.id_categoria]
+        
+        # Pasar las categorías y los puestos agrupados a la plantilla
+        return render_template('postulante_dashboard.html', 
+                               puestos=puestos, 
+                               categorias=categorias, 
+                               categorias_con_puestos=categorias_con_puestos)
+    
+    # Si el rol no es el de postulante (3), redirige al login o a otra página
     return redirect(url_for('login'))
 
 # Ruta para cerrar sesión
@@ -355,6 +372,10 @@ def eliminar_usuario(id_usuario):
     db.session.commit()
     flash('Usuario eliminado exitosamente')
     return redirect(url_for('listar_usuarios'))
+
+#########################PANTALLA USUARIO POSTULANTE################33
+
+
 
 # Ejecutar la aplicación
 if __name__ == '__main__':
