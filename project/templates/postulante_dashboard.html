@@ -1,37 +1,197 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Dashboard del Postulante</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard del Postulante</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .job-category {
+      margin-bottom: 20px;
+      border-radius: 15px;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .job-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .job-card img {
+      width: 100%;
+      height: auto;
+    }
+    .job-card .card-body {
+      padding: 15px;
+    }
+    .job-card .card-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    .job-card .card-text {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 15px;
+    }
+    .btn-postular {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .btn-postular:hover {
+      background-color: #0056b3;
+    }
+    .navbar {
+      background-color: #142f4d;
+      padding: 10px 20px;
+    }
+    .navbar-brand {
+      font-size: 1.5rem;
+      color: #fff;
+      font-weight: bold;
+    }
+    .navbar-nav .nav-link {
+      color: #f1f1f1;
+      padding: 10px 15px;
+      transition: color 0.3s, background-color 0.3s;
+      font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+      background-color: #1d456b;
+      color: #fff;
+      border-radius: 5px;
+    }
+    .btn-custom {
+      background-color: #f0a500;
+      color: white;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .btn-custom:hover {
+      background-color: #e08e00;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+  </style>
 </head>
 <body>
-    <h1>Dashboard del Postulante</h1>
-    
-    <h2>Categorías</h2>
-    {% if categorias %}
-        <ul>
-            {% for categoria in categorias %}
-                <li>{{ categoria.descripcion }}</li>
-                <ul>
-                    {% for puesto in categorias_con_puestos[categoria.id_categoria] %}
-                        <li>{{ puesto.descripcion }}</li>
-                    {% endfor %}
-                </ul>
-            {% endfor %}
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">RPA</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="./nosotros.html">Nosotros</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Postula</a></li>
         </ul>
-    {% else %}
-        <p>No hay categorías disponibles.</p>
-    {% endif %}
-    
-    <h2>Puestos</h2>
-    {% if puestos %}
-        <ul>
-            {% for puesto in puestos %}
-                <li>{{ puesto.descripcion }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No hay puestos disponibles.</p>
-    {% endif %}
+        <a class="btn btn-custom" href="#">Iniciar sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Dashboard del Postulante -->
+  <div class="container mt-4">
+    <h1 class="text-center mb-4">Dashboard del Postulante</h1>
+
+    <!-- Barra de búsqueda -->
+    <div class="mb-4">
+      <input type="text" id="jobSearch" class="form-control" placeholder="Buscar puestos...">
+    </div>
+
+    <!-- Categorías -->
+    <section id="jobCategories">
+      <h2 class="mb-3">Categorías</h2>
+      {% if categorias %}
+        {% for categoria in categorias %}
+          {% if categorias_con_puestos[categoria.id_categoria] %}
+            <div class="job-category" data-category="{{ categoria.descripcion }}">
+              <h3 class="text-primary">{{ categoria.descripcion }}</h3>
+              <div class="row">
+                {% for puesto in categorias_con_puestos[categoria.id_categoria] %}
+                  <div class="col-md-4 mb-4 job-card-container" data-job="{{ puesto.descripcion }}">
+                    <div class="card job-card">
+                      <img src="ruta_de_imagen_del_puesto.jpg" alt="Imagen del puesto">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ puesto.descripcion }}</h5>
+                        <p class="card-text">Descripción breve del puesto.</p>
+                        <a href="#" class="btn btn-postular">Postular</a>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p class="no-data">No hay categorías disponibles.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-4">
+    <p>&copy; 2024 The Button Line - Todos los derechos reservados</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Filtrar puestos por la barra de búsqueda
+    document.getElementById('jobSearch').addEventListener('input', function() {
+      const searchQuery = this.value.toLowerCase();
+      const jobCategories = document.querySelectorAll('.job-category');
+      let hasResults = false;
+
+      jobCategories.forEach(category => {
+        const jobCards = category.querySelectorAll('.job-card-container');
+        let categoryHasMatch = false;
+
+        jobCards.forEach(card => {
+          const jobTitle = card.getAttribute('data-job').toLowerCase();
+          if (jobTitle.includes(searchQuery)) {
+            card.style.display = 'block';
+            categoryHasMatch = true;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        // Mostrar u ocultar la categoría según haya coincidencias
+        if (categoryHasMatch) {
+          category.style.display = 'block';
+          hasResults = true;
+        } else {
+          category.style.display = 'none';
+        }
+      });
+
+      // Mostrar un mensaje si no hay resultados
+      if (!hasResults) {
+        document.getElementById('noResults').style.display = 'block';
+      } else {
+        document.getElementById('noResults').style.display = 'none';
+      }
+    });
+
+    // Mensaje de "sin resultados" al inicio, oculto por defecto
+    window.addEventListener('DOMContentLoaded', function() {
+      const noResultsMessage = document.createElement('p');
+      noResultsMessage.id = 'noResults';
+      noResultsMessage.className = 'text-center text-muted';
+      noResultsMessage.style.display = 'none';
+      noResultsMessage.textContent = 'No se encontraron puestos disponibles para esta búsqueda.';
+      document.getElementById('jobCategories').appendChild(noResultsMessage);
+    });
+  </script>
 </body>
 </html>

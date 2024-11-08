@@ -1,0 +1,137 @@
+¿  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla Inicio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .job-card {
+      border: 2px solid black;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    footer {
+      border-top: 2px solid black;
+      padding-top: 20px;
+      text-align: center;
+    }
+    .navbar {
+      background-color: #142f4d;
+      padding: 10px 20px;
+    }
+    .navbar-brand {
+      font-size: 1.5rem;
+      color: #fff;
+      font-weight: bold;
+    }
+    .navbar-nav .nav-link {
+      color: #f1f1f1;
+      padding: 10px 15px;
+      transition: color 0.3s, background-color 0.3s;
+      font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+      background-color: #1d456b;
+      color: #fff;
+      border-radius: 5px;
+    }
+    .btn-custom {
+      background-color: #f0a500;
+      color: white;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .btn-custom:hover {
+      background-color: #e08e00;
+    }
+    /* Sticky navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">RPA</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="./nosotros.html">Nosotros</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Postula</a></li>
+        </ul>
+        <a class="btn btn-custom" href="#">Iniciar sesión</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h3 class="mt-4 mb-4">Puestos en informática</h3>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card custom-card">
+          <img src="./img/python.jpg" class="card-img-top" alt="Descripción del puesto 1">
+          <div class="card-body">
+            <h5 class="card-title">Desarrollador Full Stack en Python</h5>
+            <p class="card-text">Encárgate del desarrollo completo de aplicaciones web utilizando Python y frameworks modernos como Django y Flask.</p>
+            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#applicationModal">Postular</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de aplicación único -->
+  <div class="modal fade" id="applicationModal" tabindex="-1" aria-labelledby="applicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="applicationModalLabel">Formulario de Postulación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="experiencia" class="form-label">Experiencia</label>
+              <textarea class="form-control" id="experiencia" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="educacion" class="form-label">Educación</label>
+              <textarea class="form-control" id="educacion" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="habilidades" class="form-label">Habilidades</label>
+              <textarea class="form-control" id="habilidades" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="referencias" class="form-label">Referencias</label>
+              <textarea class="form-control" id="referencias" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="cvFile" class="form-label">Subir CV</label>
+              <input class="form-control" type="file" id="cvFile" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-4">
+    <p>&copy; 2024 The Button Line - Todos los derechos reservados</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
