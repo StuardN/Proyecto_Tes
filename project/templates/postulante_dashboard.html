@@ -110,33 +110,67 @@
 
     <!-- Categorías -->
     <section id="jobCategories">
-      <h2 class="mb-3">Categorías</h2>
-      {% if categorias %}
-        {% for categoria in categorias %}
-          {% if categorias_con_puestos[categoria.id_categoria] %}
-            <div class="job-category" data-category="{{ categoria.descripcion }}">
-              <h3 class="text-primary">{{ categoria.descripcion }}</h3>
-              <div class="row">
-                {% for puesto in categorias_con_puestos[categoria.id_categoria] %}
-                  <div class="col-md-4 mb-4 job-card-container" data-job="{{ puesto.descripcion }}">
-                    <div class="card job-card">
-                      <img src="ruta_de_imagen_del_puesto.jpg" alt="Imagen del puesto">
-                      <div class="card-body">
-                        <h5 class="card-title">{{ puesto.descripcion }}</h5>
-                        <p class="card-text">Descripción breve del puesto.</p>
-                        <a href="#" class="btn btn-postular">Postular</a>
+        <h2 class="mb-3">Categorías</h2>
+        {% if categorias %}
+          {% for categoria in categorias %}
+            {% if categorias_con_puestos[categoria.id_categoria] %}
+              <div class="job-category" data-category="{{ categoria.descripcion }}">
+                <h3 class="text-primary">{{ categoria.descripcion }}</h3>
+                <div class="row">
+                  {% for puesto in categorias_con_puestos[categoria.id_categoria] %}
+                    <div class="col-md-4 mb-4 job-card-container" data-job="{{ puesto.descripcion }}">
+                      <div class="card job-card">
+                        <img src="ruta_de_imagen_del_puesto.jpg" alt="Imagen del puesto">
+                        <div class="card-body">
+                          <h5 class="card-title">{{ puesto.descripcion }}</h5>
+                          
+                          <!-- Acordeón para Perfil -->
+                          <div class="accordion" id="accordionPerfil{{ puesto.id }}">
+                            <div class="accordion-item">
+                              <h2 class="accordion-header" id="headingPerfil{{ puesto.id }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePerfil{{ puesto.id }}" aria-expanded="false" aria-controls="collapsePerfil{{ puesto.id }}">
+                                  Perfil
+                                </button>
+                              </h2>
+                              <div id="collapsePerfil{{ puesto.id }}" class="accordion-collapse collapse" aria-labelledby="headingPerfil{{ puesto.id }}" data-bs-parent="#accordionPerfil{{ puesto.id }}">
+                                <div class="accordion-body">
+                                  {{ puesto.perfil }}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+      
+                          <!-- Acordeón para Requisitos -->
+                          <div class="accordion" id="accordionRequisitos{{ puesto.id }}">
+                            <div class="accordion-item">
+                              <h2 class="accordion-header" id="headingRequisitos{{ puesto.id }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRequisitos{{ puesto.id }}" aria-expanded="false" aria-controls="collapseRequisitos{{ puesto.id }}">
+                                  Requisitos
+                                </button>
+                              </h2>
+                              <div id="collapseRequisitos{{ puesto.id }}" class="accordion-collapse collapse" aria-labelledby="headingRequisitos{{ puesto.id }}" data-bs-parent="#accordionRequisitos{{ puesto.id }}">
+                                <div class="accordion-body">
+                                  {{ puesto.requisitos }}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <hr>
+                          
+                          <a href="#" class="btn btn-postular">Postular</a>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                {% endfor %}
+                  {% endfor %}
+                </div>
               </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <p class="no-data">No hay categorías disponibles.</p>
-      {% endif %}
-    </section>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <p class="no-data">No hay categorías disponibles.</p>
+        {% endif %}
+      </section>
+      
   </div>
 
   <!-- Footer -->
