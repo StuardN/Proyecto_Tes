@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Postulaciones</title>
+</head>
+<body>
+    <h1>Lista de Postulaciones</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID Postulación</th>
+                <th>Usuario</th>
+                <th>Puesto</th>
+                <th>Fecha Postulación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for postulacion in postulaciones %}
+            <tr>
+                <td>{{ postulacion.id_postulacion }}</td>
+                <td>{{ postulacion.usuario.nombre_usuario }} {{ postulacion.usuario.apellidos }}</td>
+                <td>{{ postulacion.puesto.descripcion }}</td>
+                <td>{{ postulacion.fecha_postulacion }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
