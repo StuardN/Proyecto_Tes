@@ -16,62 +16,65 @@
   <section class="vh-100" style="background-color: #6a11cb;">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col col-xl-10">
+        <div class="col col-xl-8">
           <div class="card" style="border-radius: 1rem;">
             <div class="row g-0">
-              <div class="col-md-6 col-lg-5 d-none d-md-block">
-                <img src="https://scmlatam.com/wp-content/uploads/2023/05/como-postular-al-ife-laboral.png"
-                  alt="register form" class="img-fluid" style="border-radius: 1rem 0 0 1rem;" />
-              </div>
-              <div class="col-md-6 col-lg-7 d-flex align-items-center">
+              <div class="col-12">
                 <div class="card-body p-4 p-lg-5 text-black">
-
                   <form method="POST" action="{{ url_for('register') }}">
                     <div class="d-flex align-items-center mb-3 pb-1">
                       <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
                       <span class="h1 fw-bold mb-0">Registro</span>
                     </div>
-
                     <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Regístrate con tu correo</h5>
 
                     {% with messages = get_flashed_messages() %}
-                      {% if messages %}
-                        <div class="alert alert-warning" role="alert">
-                          {% for message in messages %}
-                            {{ message }}<br>
-                          {% endfor %}
-                        </div>
-                      {% endif %}
+                    {% if messages %}
+                    <div class="alert alert-warning" role="alert">
+                      {% for message in messages %}
+                      {{ message }}<br>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
                     {% endwith %}
 
-                    <div class="form-outline mb-4">
-                      <input type="text" name="nombre_usuario" id="formNombre" class="form-control form-control-lg" required />
-                      <label class="form-label" for="formNombre">Nombre</label>
-                    </div>
+                    <!-- Campos del formulario -->
+                    <div class="row">
+                      <!-- Columna izquierda -->
+                      <div class="col-md-6">
+                        <div class="form-outline mb-4">
+                          <input type="text" name="nombre_usuario" id="formNombre" class="form-control form-control-lg" required />
+                          <label class="form-label" for="formNombre">Nombre</label>
+                        </div>
 
-                    <div class="form-outline mb-4">
-                      <input type="text" name="apellidos" id="formApellidos" class="form-control form-control-lg" required />
-                      <label class="form-label" for="formApellidos">Apellidos</label>
-                    </div>
+                        <div class="form-outline mb-4">
+                          <input type="email" name="email" id="formEmail" class="form-control form-control-lg" required />
+                          <label class="form-label" for="formEmail">Correo Electrónico</label>
+                        </div>
 
-                    <div class="form-outline mb-4">
-                      <input type="email" name="email" id="formEmail" class="form-control form-control-lg" required />
-                      <label class="form-label" for="formEmail">Correo Electrónico</label>
-                    </div>
+                        <div class="form-outline mb-4">
+                          <input type="text" name="direccion" id="formDireccion" class="form-control form-control-lg" />
+                          <label class="form-label" for="formDireccion">Dirección</label>
+                        </div>
+                      </div>
 
-                    <div class="form-outline mb-4">
-                      <input type="password" name="password" id="formPassword" class="form-control form-control-lg" required />
-                      <label class="form-label" for="formPassword">Contraseña</label>
-                    </div>
+                      <!-- Columna derecha -->
+                      <div class="col-md-6">
+                        <div class="form-outline mb-4">
+                          <input type="text" name="apellidos" id="formApellidos" class="form-control form-control-lg" required />
+                          <label class="form-label" for="formApellidos">Apellidos</label>
+                        </div>
 
-                    <div class="form-outline mb-4">
-                      <input type="text" name="direccion" id="formDireccion" class="form-control form-control-lg" />
-                      <label class="form-label" for="formDireccion">Dirección</label>
-                    </div>
+                        <div class="form-outline mb-4">
+                          <input type="password" name="password" id="formPassword" class="form-control form-control-lg" required />
+                          <label class="form-label" for="formPassword">Contraseña</label>
+                        </div>
 
-                    <div class="form-outline mb-4">
-                      <input type="text" name="celular" id="formCelular" class="form-control form-control-lg" />
-                      <label class="form-label" for="formCelular">Celular</label>
+                        <div class="form-outline mb-4">
+                          <input type="text" name="celular" id="formCelular" class="form-control form-control-lg" />
+                          <label class="form-label" for="formCelular">Celular</label>
+                        </div>
+                      </div>
                     </div>
 
                     <div class="pt-1 mb-4">
@@ -82,7 +85,6 @@
                     <a href="#!" class="small text-muted">Términos de uso</a>
                     <a href="#!" class="small text-muted">Política de privacidad</a>
                   </form>
-
                 </div>
               </div>
             </div>

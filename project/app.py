@@ -214,7 +214,6 @@ def login():
 
     return render_template('login.html')
 
-# Ruta de registro de usuarios
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -224,13 +223,15 @@ def register():
         password = request.form.get('password')
         direccion = request.form.get('direccion')
         celular = request.form.get('celular')
-        id_rol = 3
+        id_rol = 3  # Rol predeterminado para nuevos usuarios
 
+        # Verificar si el usuario ya existe
         existing_user = Usuario.query.filter_by(email=email).first()
         if existing_user:
-            flash('El usuario ya existe. Intenta con otro correo electrónico.')
+            flash('El usuario ya existe. Intenta con otro correo electrónico.', 'danger')
             return redirect(url_for('register'))
 
+        # Crear el nuevo usuario
         new_user = Usuario(
             nombre_usuario=nombre_usuario,
             apellidos=apellidos,
@@ -241,15 +242,16 @@ def register():
         )
         new_user.set_password(password)
 
-        db.session.add(new_user)
-
+        # Guardar el usuario en la base de datos
         try:
+            db.session.add(new_user)
             db.session.commit()
-            flash('Usuario registrado correctamente.')
-            return redirect(url_for('login'))
+            flash('Usuario registrado correctamente. Por favor, inicia sesión.', 'success')
+            return redirect(url_for('login'))  # Redirigir al login
         except Exception as e:
             db.session.rollback()
-            flash(f'Error al registrar el usuario: {str(e)}')
+            flash(f'Error al registrar el usuario: {str(e)}', 'danger')
+            return redirect(url_for('register'))
 
     return render_template('register.html')
 
@@ -576,7 +578,6 @@ def generar_pdf():
     
     enviar_pdf_por_correo(email, pdf_buffer)
 
-
     # Enviar PDF como respuesta para descargar
     pdf_buffer.seek(0)
     return send_file(
@@ -610,6 +611,8 @@ def enviar_pdf_por_correo(correo_destino, pdf_buffer):
         print("Correo enviado correctamente a:", correo_destino)
     except Exception as e:
         print("Error al enviar el correo:", e)
+        
+        
 if __name__ == '__main__':
     app.run(debug=True)
 

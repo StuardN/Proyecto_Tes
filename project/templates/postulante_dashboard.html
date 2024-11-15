@@ -180,30 +180,38 @@
                 <form id="perfilForm" action="/generar_pdf" method="POST">
                   <!-- Datos personales -->
                   <h5>Datos Personales</h5>
+                  <input type="hidden" name="puesto" value="{{ puesto.descripcion }}">
+                  
                   <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre:</label>
+                    <label for="nombre" class="form-label">Nombre</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" required>
                   </div>
+        
                   <div class="mb-3">
                     <label for="cedula" class="form-label">Cédula:</label>
                     <input type="text" class="form-control" id="cedula" name="cedula" required>
                   </div>
+        
                   <div class="mb-3">
                     <label for="email" class="form-label">Email:</label>
                     <input type="email" class="form-control" id="email" name="email" required>
                   </div>
+        
                   <div class="mb-3">
                     <label for="direccion" class="form-label">Dirección:</label>
                     <input type="text" class="form-control" id="direccion" name="direccion" required>
                   </div>
+        
                   <div class="mb-3">
                     <label for="edad" class="form-label">Edad:</label>
                     <input type="number" class="form-control" id="edad" name="edad" required>
                   </div>
+        
                   <div class="mb-3">
                     <label for="telefono" class="form-label">Teléfono:</label>
                     <input type="text" class="form-control" id="telefono" name="telefono" required>
                   </div>
+        
                   <div class="mb-3">
                     <label for="descripcion" class="form-label">Descripción:</label>
                     <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
@@ -215,16 +223,18 @@
                     <label for="nivelEstudio" class="form-label">Nivel de estudio:</label>
                     <input type="text" class="form-control" id="nivelEstudio" name="nivelEstudio">
                   </div>
+        
                   <div class="mb-3">
                     <label for="estadoEstudio" class="form-label">Estado de estudio:</label>
                     <input type="text" class="form-control" id="estadoEstudio" name="estadoEstudio">
                   </div>
+        
                   <div class="mb-3">
                     <label for="nombreInstitucion" class="form-label">Nombre de la institución:</label>
                     <input type="text" class="form-control" id="nombreInstitucion" name="nombreInstitucion">
                   </div>
         
-                  <!-- Habilidades técnicas -->
+                  <!-- Habilidades Técnicas -->
                   <h5>Habilidades Técnicas</h5>
                   <div id="habilidadesContainer">
                     <div class="input-group mb-3">
@@ -245,30 +255,33 @@
                   <button type="button" class="btn btn-primary" id="addConocimiento">Agregar Conocimiento</button>
         
                   <!-- Cursos realizados -->
-                  
-          <div id="cursosContainer">
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora">
-              <input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado">
-              <input type="date" class="form-control" name="fechaCertificado[]">
-              <button type="button" class="btn btn-danger btn-remove-curso" onclick="eliminarElemento(this)">Eliminar</button>
-            </div>
-          </div>
-          <button type="button" class="btn btn-primary mb-3" id="addCurso" onclick="agregarCurso()">Agregar Curso</button>
+                  <div id="cursosContainer">
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora">
+                      <input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado">
+                      <input type="date" class="form-control" name="fechaCertificado[]">
+                      <button type="button" class="btn btn-danger btn-remove-curso" onclick="eliminarElemento(this)">Eliminar</button>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-primary mb-3" id="addCurso" onclick="agregarCurso()">Agregar Curso</button>
+        
                   <!-- Experiencia laboral -->
                   <h5>Experiencia Laboral</h5>
                   <div class="mb-3">
                     <label for="nombreEmpresa" class="form-label">Nombre de la empresa:</label>
                     <input type="text" class="form-control" id="nombreEmpresa" name="nombreEmpresa">
                   </div>
+        
                   <div class="mb-3">
                     <label for="cargo" class="form-label">Cargo:</label>
                     <input type="text" class="form-control" id="cargo" name="cargo">
                   </div>
+        
                   <div class="mb-3">
                     <label for="funciones" class="form-label">Funciones principales:</label>
                     <textarea class="form-control" id="funciones" name="funciones" rows="3"></textarea>
                   </div>
+                  
                 </form>
               </div>
               <div class="modal-footer">
@@ -278,6 +291,7 @@
             </div>
           </div>
         </div>
+        
         
 
                         
