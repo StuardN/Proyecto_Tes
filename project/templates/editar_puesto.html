@@ -9,7 +9,7 @@
 <body>
 <div class="container mt-5">
     <h1>Editar Puesto</h1>
-    <form action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post">
+    <form action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="descripcion">Descripción</label>
             <input type="text" class="form-control" name="descripcion" value="{{ puesto.descripcion }}" required>
@@ -32,6 +32,21 @@
                 {% endfor %}
             </select>
         </div>
+
+        <!-- Campo para cambiar la imagen -->
+        <div class="form-group">
+            <label for="imagen">Imagen</label>
+            <input type="file" class="form-control" name="imagen" accept="image/*">
+        </div>
+
+        <!-- Mostrar imagen actual si existe -->
+        {% if puesto.imagen %}
+            <div class="form-group">
+                <label>Imagen Actual</label>
+                <img src="{{ url_for('static', filename=puesto.imagen) }}" alt="Imagen del puesto" width="150">
+            </div>
+        {% endif %}
+
         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
         <a href="{{ url_for('puestos') }}" class="btn btn-secondary">Cancelar</a>
     </form>

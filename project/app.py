@@ -1,52 +1,28 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-import io
-import os
-from flask import send_file
-from flask import Flask, render_template, request, send_file
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import FileStorage
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from io import BytesIO
-from io import BytesIO
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
+from email.mime.application import MIMEApplication
 from email import encoders
 from dotenv import load_dotenv
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, IntegerField, FileField
 from wtforms.validators import InputRequired, Length, NumberRange, Email
-from flask_wtf.file import FileRequired, FileAllowed  # Correct import
-from werkzeug.datastructures import FileStorage
+from flask_wtf.file import FileRequired, FileAllowed
 from datetime import datetime
-import smtplib
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+import os
 import io
-import smtplib
-import os
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
-from flask import Flask, request, send_file
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from dotenv import load_dotenv
-from flask import Flask, request, send_file
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
-from io import BytesIO
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.application import MIMEApplication
-import os
+
 
 load_dotenv()
 
@@ -54,7 +30,8 @@ load_dotenv()
 EMAIL_USER = os.getenv("EMAIL_USER")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
 TEMP_PDF_PATH = 'uploads/postulacion.pdf'
-
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 
@@ -62,6 +39,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mssql+pyodbc://tesis:123456@DESKTOP-SAV0H0J\\SQLExpress/RecursosHumanos3?driver=ODBC+Driver+17+for+SQL+Server'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 # Inicialización de la base de datos
 db = SQLAlchemy(app)
@@ -81,9 +61,10 @@ class Usuario(db.Model, UserMixin):
     email = db.Column(db.String(100), nullable=False, unique=True)
     contraseña = db.Column(db.String(500), nullable=False)
     direccion = db.Column(db.String(200))
+    edad = db.Column(db.Integer, nullable=False)
     celular = db.Column(db.String(15))
     id_rol = db.Column(db.Integer, nullable=False)
-    fecha_registro = db.Column(db.Date, default=datetime.utcnow)  # Cambio aquí
+    fecha_registro = db.Column(db.Date, default=datetime.utcnow)
     estado = db.Column(db.String(50), default='Activo')
 
     def set_password(self, password):
@@ -96,6 +77,7 @@ class Usuario(db.Model, UserMixin):
 
     def get_id(self):
         return str(self.id_usuario)
+
 
 class Categoria(db.Model):
     __tablename__ = 'Categorias'
@@ -111,6 +93,7 @@ class Puesto(db.Model):
     perfil = db.Column(db.String)
     requisitos = db.Column(db.String)
     id_categoria = db.Column(db.Integer, db.ForeignKey('Categorias.id_categoria'), nullable=False)
+    imagen = db.Column(db.String)  
     
 class Postulaciones(db.Model):
     __tablename__ = 'Postulaciones'
@@ -146,12 +129,51 @@ class CVForm(FlaskForm):
         FileRequired(),  # Asegúrate de que este validador esté importado correctamente
         FileAllowed(['pdf', 'doc', 'docx'], 'Solo se permiten archivos PDF y Word.')
     ])
-
-   
+ 
 
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id))  # Asegúrate de convertir `user_id` a `int`
+
+@app.route('/puestos', methods=['GET', 'POST'])
+@login_required
+def puestos():
+    if current_user.id_rol == 1:  # Solo el admin puede acceder
+        if request.method == 'POST':
+            # Obtener datos del formulario y crear el puesto
+            descripcion = request.form['descripcion']
+            perfil = request.form.get('perfil')
+            requisitos = request.form.get('requisitos')
+            id_categoria = request.form.get('id_categoria')
+            imagen = None  # Por defecto, sin imagen
+
+            # Manejar la imagen si es que se sube una
+            if 'imagen' in request.files:
+                file = request.files['imagen']
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(file_path)
+                    imagen = os.path.join('static/uploads', filename)
+
+            # Crear el nuevo puesto
+            nuevo_puesto = Puesto(
+                descripcion=descripcion,
+                perfil=perfil,
+                requisitos=requisitos,
+                id_categoria=id_categoria,
+                imagen=imagen
+            )
+
+            db.session.add(nuevo_puesto)
+            db.session.commit()
+            flash('Puesto creado exitosamente.')
+
+        # Obtener todos los puestos y categorías
+        puestos = Puesto.query.all()
+        categorias = Categoria.query.all()
+        return render_template('puestos.html', puestos=puestos, categorias=categorias)
+    return redirect(url_for('login'))
 
 
 # Ruta para eliminar un puesto
@@ -159,10 +181,20 @@ def load_user(user_id):
 @login_required
 def eliminar_puesto(id):
     puesto = Puesto.query.get_or_404(id)
+    
+    # Eliminar la imagen del sistema de archivos si existe
+    if puesto.imagen and os.path.exists(puesto.imagen):
+        os.remove(puesto.imagen)
+    
     db.session.delete(puesto)
     db.session.commit()
     flash('Puesto eliminado exitosamente.')
     return redirect(url_for('puestos'))
+
+# Función para verificar si la extensión del archivo es válida
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 # Ruta para editar un puesto
 @app.route('/editar_puesto/<int:id>', methods=['GET', 'POST'])
@@ -174,6 +206,24 @@ def editar_puesto(id):
         puesto.perfil = request.form.get('perfil')
         puesto.requisitos = request.form.get('requisitos')
         puesto.id_categoria = request.form.get('id_categoria')
+
+        # Manejar la nueva imagen si es que se sube una
+        imagen = puesto.imagen  # Imagen existente
+
+        if 'imagen' in request.files:
+            file = request.files['imagen']
+            if file and allowed_file(file.filename):
+                # Si ya existe una imagen, eliminarla del sistema de archivos
+                if imagen and os.path.exists(imagen):
+                    os.remove(imagen)
+                
+                # Guardar la nueva imagen
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                imagen = os.path.join('static/uploads', filename)
+            
+        puesto.imagen = imagen  # Actualizar la imagen en el modelo
 
         db.session.commit()
         flash('Puesto actualizado exitosamente.')
@@ -214,43 +264,59 @@ def login():
 
     return render_template('login.html')
 
+# Ruta para registrar usuarios
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         nombre_usuario = request.form.get('nombre_usuario')
         apellidos = request.form.get('apellidos')
         email = request.form.get('email')
+        edad = request.form.get('edad')
         password = request.form.get('password')
         direccion = request.form.get('direccion')
         celular = request.form.get('celular')
-        id_rol = 3  # Rol predeterminado para nuevos usuarios
+        id_rol = 3  # Rol predeterminado
 
-        # Verificar si el usuario ya existe
-        existing_user = Usuario.query.filter_by(email=email).first()
-        if existing_user:
-            flash('El usuario ya existe. Intenta con otro correo electrónico.', 'danger')
+        # Validaciones básicas
+        if not all([nombre_usuario, apellidos, email, edad, password]):
+            flash('Todos los campos obligatorios deben ser completados.', 'danger')
             return redirect(url_for('register'))
 
-        # Crear el nuevo usuario
+        # Validar que la edad sea un número entero
+        try:
+            edad = int(edad)  # Convierte edad a entero
+        except ValueError:
+            flash('La edad debe ser un número válido.', 'danger')
+            return redirect(url_for('register'))
+
+        # Verificar si el correo ya existe
+        existing_user = Usuario.query.filter_by(email=email).first()
+        if existing_user:
+            flash('El correo electrónico ya está registrado.', 'danger')
+            return redirect(url_for('register'))
+
+        # Crear nuevo usuario
         new_user = Usuario(
             nombre_usuario=nombre_usuario,
             apellidos=apellidos,
             email=email,
             direccion=direccion,
             celular=celular,
-            id_rol=id_rol
+            id_rol=id_rol,
+            edad=edad
         )
-        new_user.set_password(password)
+        new_user.set_password(password)  # Encriptar contraseña
 
-        # Guardar el usuario en la base de datos
+        # Intentar guardar el usuario en la base de datos
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash('Usuario registrado correctamente. Por favor, inicia sesión.', 'success')
-            return redirect(url_for('login'))  # Redirigir al login
+            flash('Usuario registrado exitosamente. Por favor, inicia sesión.', 'success')
+            return redirect(url_for('login'))  # Cambia 'login' si tu ruta de login tiene otro nombre
         except Exception as e:
             db.session.rollback()
-            flash(f'Error al registrar el usuario: {str(e)}', 'danger')
+            print(f"Error al guardar en la base de datos: {e}")
+            flash(f'Hubo un error al registrar al usuario: {str(e)}', 'danger')
             return redirect(url_for('register'))
 
     return render_template('register.html')

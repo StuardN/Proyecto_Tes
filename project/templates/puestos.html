@@ -12,7 +12,7 @@
         <h1 class="mb-4">Lista de Puestos</h1>
 
         <!-- Formulario para crear un nuevo puesto -->
-        <form method="POST" action="{{ url_for('puestos') }}" class="mb-5">
+        <form method="POST" action="{{ url_for('puestos') }}" enctype="multipart/form-data" class="mb-5">
             <div class="form-group">
                 <label for="descripcion">Descripción:</label>
                 <input type="text" class="form-control" name="descripcion" required>
@@ -33,39 +33,55 @@
                     {% endfor %}
                 </select>
             </div>
+            <div class="form-group">
+                <label for="imagen">Imagen:</label>
+                <input type="file" class="form-control" name="imagen" accept="image/*">
+            </div>
             <button type="submit" class="btn btn-primary">Crear Puesto</button>
         </form>
-
         <h2>Puestos Existentes</h2>
-        <table class="table table-bordered table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Descripción</th>
-                    <th>Perfil</th>
-                    <th>Requisitos</th>
-                    <th>Categoría</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for puesto in puestos %}
-                <tr>
-                    <td>{{ puesto.id_puesto }}</td>
-                    <td>{{ puesto.descripcion }}</td>
-                    <td>{{ puesto.perfil }}</td>
-                    <td>{{ puesto.requisitos }}</td>
-                    <td>{{ puesto.categoria.descripcion }}</td> <!-- Cambié 'nombre' a 'descripcion' -->
-                    <td>
-                        <a href="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="{{ url_for('eliminar_puesto', id=puesto.id_puesto) }}" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+ imagen en la tabla :
+
+html
+
+Copiar código
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Perfil</th>
+            <th>Requisitos</th>
+            <th>Categoría</th>
+            <th>Imagen</th>  <!-- Nueva columna para la imagen -->
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for puesto in puestos %}
+        <tr>
+            <td>{{ puesto.id_puesto }}</td>
+            <td>{{ puesto.descripcion }}</td>
+            <td>{{ puesto.perfil }}</td>
+            <td>{{ puesto.requisitos }}</td>
+            <td>{{ puesto.categoria.descripcion }}</td>
+            <td>
+                {% if puesto.imagen %}
+                    <img src="{{ puesto.imagen }}" alt="Imagen del puesto" width="100">
+                {% else %}
+                    No hay imagen
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" class="btn btn-warning btn-sm">Editar</a>
+                <form action="{{ url_for('eliminar_puesto', id=puesto.id_puesto) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
     </div>
 
     <!-- Enlace a Bootstrap JS y dependencias -->
