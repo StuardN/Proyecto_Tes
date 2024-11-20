@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    {% include 'menu_admin.html' %}
     <div class="container mt-4">
         <h1>Editar Usuario</h1>
 
@@ -19,7 +20,7 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST">
+        <form id="editUserForm" method="POST">
             <div class="form-group">
                 <label for="nombre_usuario">Nombre</label>
                 <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" value="{{ usuario.nombre_usuario }}" required>
@@ -36,6 +37,35 @@
         </form>
         <a href="{{ url_for('listar_usuarios') }}" class="btn btn-secondary mt-3">Volver a la lista de usuarios</a>
     </div>
+
+    <script>
+        document.getElementById("editUserForm").addEventListener("submit", function(event) {
+            const nombre = document.getElementById("nombre_usuario").value;
+            const apellidos = document.getElementById("apellidos").value;
+            const email = document.getElementById("email").value;
+
+            // Validar que el nombre y los apellidos solo contengan letras
+            const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+            if (!regexNombre.test(nombre)) {
+                alert("El nombre solo debe contener letras.");
+                event.preventDefault();
+                return;
+            }
+            if (!regexNombre.test(apellidos)) {
+                alert("Los apellidos solo deben contener letras.");
+                event.preventDefault();
+                return;
+            }
+
+            // Validar el correo electrónico
+            const regexEmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            if (!regexEmail.test(email)) {
+                alert("El correo debe ser de Gmail y tener un formato válido (ejemplo@gmail.com).");
+                event.preventDefault();
+                return;
+            }
+        });
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>

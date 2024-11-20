@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    {% include 'menu_admin.html' %}
     <div class="container mt-4">
         <h2>Agregar Nuevo Usuario</h2>
-        <form method="POST" action="{{ url_for('nuevo_usuario') }}">
+        <form id="userForm" method="POST" action="{{ url_for('nuevo_usuario') }}">
             <div class="form-group">
                 <label for="nombre">Nombre</label>
                 <input type="text" class="form-control" id="nombre" name="nombre" required>
@@ -36,8 +37,37 @@
             </div>
             <button type="submit" class="btn btn-primary">Guardar Usuario</button>
         </form>
-        
     </div>
+
+    <script>
+        document.getElementById("userForm").addEventListener("submit", function(event) {
+            const nombre = document.getElementById("nombre").value;
+            const apellidos = document.getElementById("apellidos").value;
+            const email = document.getElementById("email").value;
+
+            // Validar que el nombre y los apellidos solo contengan letras
+            const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+            if (!regexNombre.test(nombre)) {
+                alert("El nombre solo debe contener letras.");
+                event.preventDefault();
+                return;
+            }
+            if (!regexNombre.test(apellidos)) {
+                alert("Los apellidos solo deben contener letras.");
+                event.preventDefault();
+                return;
+            }
+
+            // Validar el correo electrónico
+            const regexEmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            if (!regexEmail.test(email)) {
+                alert("El correo debe ser de Gmail y tener un formato válido (ejemplo@gmail.com).");
+                event.preventDefault();
+                return;
+            }
+        });
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -138,7 +138,7 @@ def load_user(user_id):
 @app.route('/puestos', methods=['GET', 'POST'])
 @login_required
 def puestos():
-    if current_user.id_rol == 1:  # Solo el admin puede acceder
+    if current_user.id_rol in [1, 2]:  # Permitir acceso solo a admin (1) y rrhh (2)
         if request.method == 'POST':
             # Obtener datos del formulario y crear el puesto
             descripcion = request.form['descripcion']
@@ -147,7 +147,7 @@ def puestos():
             id_categoria = request.form.get('id_categoria')
             imagen = None  # Por defecto, sin imagen
 
-            # Manejar la imagen si es que se sube una
+            # Manejar la imagen si se sube
             if 'imagen' in request.files:
                 file = request.files['imagen']
                 if file and allowed_file(file.filename):
@@ -173,8 +173,9 @@ def puestos():
         puestos = Puesto.query.all()
         categorias = Categoria.query.all()
         return render_template('puestos.html', puestos=puestos, categorias=categorias)
-    return redirect(url_for('login'))
-
+    else:
+        flash('No tienes permisos para acceder a esta sección.', 'danger')
+        return redirect(url_for('home'))  # Redirigir a una página apropiada
 
 # Ruta para eliminar un puesto
 @app.route('/eliminar_puesto/<int:id>', methods=['POST'])
@@ -264,9 +265,14 @@ def login():
 
     return render_template('login.html')
 
-# Ruta para registrar usuarios
+#Register
 @app.route('/register', methods=['GET', 'POST'])
+@login_required  # Asegura que solo usuarios autenticados puedan acceder
 def register():
+    if current_user.id_rol != 1:  # Solo admin puede acceder
+        flash('No tienes permisos para acceder a esta sección.', 'danger')
+        return redirect(url_for('home'))  # Redirigir a una página apropiada
+
     if request.method == 'POST':
         nombre_usuario = request.form.get('nombre_usuario')
         apellidos = request.form.get('apellidos')
@@ -321,6 +327,7 @@ def register():
 
     return render_template('register.html')
 
+
 # Rutas para los diferentes dashboards
 @app.route('/admin_dashboard')
 @login_required
@@ -344,30 +351,73 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-
-# CATEGORIAS
-# Ruta para crear y listar categorías
-@app.route('/categorias', methods=['GET', 'POST'])
+@app.route('/postulante_1')
 @login_required
-def categorias():
-    if request.method == 'POST':
-        descripcion = request.form.get('descripcion')
+def postulante_1():
+    # Verifica que el usuario tenga el rol de postulante (asumiendo que el rol '3' es de postulante)
+    if current_user.id_rol == 3:
+        # Obtener todos los puestos y categorías
+        puestos = Puesto.query.all()
+        categorias = Categoria.query.all()
         
-        # Verificación para evitar descripciones duplicadas
-        if Categoria.query.filter_by(descripcion=descripcion).first():
-            flash('La categoría ya existe.')
-            return redirect(url_for('categorias'))
+        # Crear un diccionario donde cada categoría tiene una lista de puestos asociados
+        categorias_con_puestos = {
+            categoria.id_categoria: [puesto for puesto in puestos if puesto.id_categoria == categoria.id_categoria]
+            for categoria in categorias
+        }
         
-        nueva_categoria = Categoria(descripcion=descripcion, estado='Activo')
-        db.session.add(nueva_categoria)
-        db.session.commit()
-        flash('Categoría creada exitosamente.')
-        return redirect(url_for('categorias'))
+        # Renderizar la plantilla con los datos obtenidos
+        return render_template(
+            'postulante_1.html',
+            puestos=puestos,
+            categorias=categorias,
+            categorias_con_puestos=categorias_con_puestos
+        )
+    
+    # Si el usuario no tiene el rol adecuado, lo redirige a la página de login
+    return redirect(url_for('login'))
 
+
+@app.route('/nosotros')
+def nosotros():
+    return render_template('nosotros.html')
+
+@app.route('/admin_page')
+def admin_page():
+    return render_template('admin.html')
+
+@app.route('/home_user')
+def admin():
+    return render_template('admin.html')
+
+@app.route('/categorias', methods=['GET', 'POST'])
+@login_required  # Asegura que solo usuarios autenticados puedan acceder
+def categorias():
+    if current_user.id_rol not in [1, 2]:  # Solo admin (1) y RRHH (2) pueden acceder
+        flash('No tienes permisos para acceder a esta sección.', 'danger')
+        return redirect(url_for('home'))  # Redirigir a una página apropiada
+
+    if request.method == 'POST':
+        nombre = request.form.get('descripcion')  # Usar 'descripcion' para coincidir con el formulario
+
+        # Validaciones básicas
+        if not nombre:
+            flash('El nombre de la categoría es obligatorio.', 'danger')
+            return redirect(url_for('categorias'))
+
+        # Crear nueva categoría
+        nueva_categoria = Categoria(descripcion=nombre)  # Cambiar a 'descripcion'
+        try:
+            db.session.add(nueva_categoria)
+            db.session.commit()
+            flash('Categoría creada exitosamente.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Hubo un error al crear la categoría: {str(e)}', 'danger')
+
+    # Obtener todas las categorías existentes
     categorias = Categoria.query.all()
     return render_template('categorias.html', categorias=categorias)
-
-
 
 # Ruta para editar una categoría
 @app.route('/editar_categoria/<int:id_categoria>', methods=['GET', 'POST'])
@@ -404,25 +454,21 @@ def eliminar_categoria(id_categoria):
     return redirect(url_for('categorias'))
 
 
-########################3rutas usuarios #########################
-# Ruta para ver todos los usuarios
-def obtener_usuario_por_id(id_usuario):
-    return Usuario.query.get(id_usuario)
+######################### Rutas usuarios #########################
 
-def actualizar_usuario(id_usuario, nombre, apellidos, email):
-    usuario = obtener_usuario_por_id(id_usuario)
-    if usuario:
-        usuario.nombre_usuario = nombre
-        usuario.apellidos = apellidos
-        usuario.email = email
-        db.session.commit()
+# Ruta para ver todos los usuarios
+@app.route('/usuarios/crud')
+def crud_usuarios():
+    usuarios = Usuario.query.all()  # Si necesitas pasar datos a la plantilla
+    return render_template('crud_user.html', usuarios=usuarios)
 
 # Ruta para listar usuarios
 @app.route('/usuarios')
 def listar_usuarios():
     usuarios = Usuario.query.all()
-    return render_template('_crud_user.html', usuarios=usuarios)
+    return render_template('crud_user.html', usuarios=usuarios)
 
+# Ruta para agregar un nuevo usuario
 @app.route('/usuarios/nuevo', methods=['GET', 'POST'])
 def nuevo_usuario():
     if request.method == 'POST':
@@ -432,21 +478,20 @@ def nuevo_usuario():
         contraseña = request.form['contraseña']
         id_rol = request.form['id_rol']
 
-        # Hash the password
+        # Hash de la contraseña
         contraseña_hash = generate_password_hash(contraseña)
 
         nuevo_usuario = Usuario(
             nombre_usuario=nombre,
             apellidos=apellidos,
             email=email,
-            contraseña=contraseña_hash,  # Use the hashed password
+            contraseña=contraseña_hash,  # Contraseña encriptada
             id_rol=id_rol,
             estado='Activo'
         )
         db.session.add(nuevo_usuario)
         db.session.commit()
 
-        # Use the correct endpoint name here
         return redirect(url_for('listar_usuarios'))
 
     return render_template('nuevo_usuario.html')
@@ -454,24 +499,22 @@ def nuevo_usuario():
 # Ruta para editar un usuario
 @app.route('/usuarios/editar/<int:id_usuario>', methods=['GET', 'POST'])
 def editar_usuario(id_usuario):
-    usuario = obtener_usuario_por_id(id_usuario)
-
-    if not usuario:
-        flash('Usuario no encontrado', 'danger')
-        return redirect(url_for('listar_usuarios'))
+    usuario = Usuario.query.get_or_404(id_usuario)
 
     if request.method == 'POST':
-        # Obtener los datos del formulario
         nombre = request.form['nombre_usuario']
         apellidos = request.form['apellidos']
         email = request.form['email']
 
-        # Actualizar el usuario en la base de datos
-        actualizar_usuario(id_usuario, nombre, apellidos, email)
-        flash('Usuario actualizado exitosamente!', 'success')
+        # Actualizar datos
+        usuario.nombre_usuario = nombre
+        usuario.apellidos = apellidos
+        usuario.email = email
+        db.session.commit()
+
+        flash('Usuario actualizado exitosamente', 'success')
         return redirect(url_for('listar_usuarios'))
 
-    # Renderizar la plantilla de edición de usuario con los datos actuales
     return render_template('editar_usuario.html', usuario=usuario)
 
 # Ruta para eliminar un usuario
@@ -480,8 +523,10 @@ def eliminar_usuario(id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     db.session.delete(usuario)
     db.session.commit()
-    flash('Usuario eliminado exitosamente')
+
+    flash('Usuario eliminado exitosamente', 'success')
     return redirect(url_for('listar_usuarios'))
+
 
 # Ejecutar la aplicación
 @app.route('/postulante_dashboard')
@@ -515,11 +560,12 @@ from io import BytesIO
 from flask import Flask, request, send_file
 
 
-
 @app.route('/generar_pdf', methods=['POST'])
 def generar_pdf():
     # Datos personales
     nombre = request.form.get('nombre')
+    cargo = request.form.get('cargo')
+    cargo_postular = request.form.get('cargoPostular')  # Nuevo campo para el cargo a postular
     cedula = request.form.get('cedula')
     email = request.form.get('email')
     direccion = request.form.get('direccion')
@@ -560,7 +606,8 @@ def generar_pdf():
     elements.append(Paragraph("Postulación de Candidato", styles['Title']))
     elements.append(Spacer(1, 12))
 
-    # Información personal
+    # (El resto del contenido del PDF sigue igual...)
+     # Información personal
     elements.append(Paragraph("Información Personal", styles['Heading2']))
     personal_data = [
         ["Nombre", nombre],
@@ -639,10 +686,13 @@ def generar_pdf():
     elements.append(table)
     elements.append(Spacer(1, 12))
 
+
+
     # Construir PDF
     doc.build(elements)
     
-    enviar_pdf_por_correo(email, pdf_buffer)
+    # Llamada corregida
+    enviar_pdf_por_correo(email, pdf_buffer, cargo_postular, nombre)
 
     # Enviar PDF como respuesta para descargar
     pdf_buffer.seek(0)
@@ -653,32 +703,42 @@ def generar_pdf():
         mimetype='application/pdf'
     )
 
-
-def enviar_pdf_por_correo(correo_destino, pdf_buffer):
+def enviar_pdf_por_correo(correo_destino, pdf_buffer, cargo_postular, nombre_postulante):
     remitente = os.getenv("EMAIL_USER")
     password = os.getenv("EMAIL_PASS")
+
+    # Construcción del asunto con el cargo a postular
+    asunto = f"PROCESO DE CONTRATACION - {cargo_postular} - {nombre_postulante}"
 
     # Configuración del mensaje de correo
     mensaje = MIMEMultipart()
     mensaje["From"] = remitente
     mensaje["To"] = correo_destino
-    mensaje["Subject"] = "PDF de Postulación"
+    mensaje["Subject"] = asunto
 
-    # Adjunta el PDF al correo
+    # Adjuntar el PDF al correo
     adjunto = MIMEApplication(pdf_buffer.getvalue(), _subtype="pdf")
     adjunto.add_header("Content-Disposition", "attachment", filename="postulacion.pdf")
     mensaje.attach(adjunto)
 
-    # Conexión SMTP para enviar el correo
+    # Enviar el correo con SMTP
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as servidor:
             servidor.login(remitente, password)
             servidor.sendmail(remitente, correo_destino, mensaje.as_string())
-        print("Correo enviado correctamente a:", correo_destino)
+        print("Correo enviado exitosamente.")
     except Exception as e:
-        print("Error al enviar el correo:", e)
+        print(f"Error al enviar el correo: {e}")
+
+
         
         
+        
+@app.route('/postulacion_form')
+@login_required
+def postulacion_form():
+    return render_template('postulacion_form.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
 

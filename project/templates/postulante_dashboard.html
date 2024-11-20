@@ -109,30 +109,7 @@
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">RPA</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="#">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="./nosotros.html">Nosotros</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Postula</a></li>
-        </ul>
-        {% if current_user.is_authenticated %}
-       <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
-        <button type="submit" class="btn btn-custom">
-          Cerrar Sesión, {{ current_user.username }}
-      </button>
-        </form>
-    {% endif %}
-      </div>
-    </div>
-  </nav>
-
+  {% include 'menu_postulante.html' %}
   <!-- Dashboard del Postulante -->
   <div class="container mt-4">
     <h1 class="text-center mb-4">Oportunidades de empleo</h1>
@@ -173,14 +150,15 @@
                       <p>{{ puesto.requisitos }}</p>
     
                       <hr>
-                      <button type="button" class="btn" style="background-color: #9A616D; color: white; border: 2px solid #9A616D;" data-bs-toggle="modal" data-bs-target="#perfilModal">
-                        Postular
-                      </button>
+                      <button type="button" class="btn" style="background-color: #9A616D; color: white; border: 2px solid #9A616D;">
+                        <a href="{{ url_for('postulacion_form') }}" style="text-decoration: none; color: white;">Postular</a>
+                    </button>
+                    
                       
                       
            
                                                   <!-- Modal para el formulario de postulación -->
-        <!-- Modal para el formulario de postulación (Fuera del bucle) -->
+        <!-- 
         <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -190,7 +168,7 @@
               </div>
               <div class="modal-body">
                 <form id="perfilForm" action="/generar_pdf" method="POST">
-                  <!-- Datos personales -->
+                  <!-- Datos personales 
                   <h5>Datos Personales</h5>
                   <input type="hidden" name="puesto" value="{{ puesto.descripcion }}">
                   
@@ -229,7 +207,7 @@
                     <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
                   </div>
         
-                  <!-- Educación -->
+                  <!-- Educación 
                   <h5>Educación</h5>
                   <div class="mb-3">
                     <label for="nivelEstudio" class="form-label">Nivel de estudio:</label>
@@ -246,7 +224,7 @@
                     <input type="text" class="form-control" id="nombreInstitucion" name="nombreInstitucion">
                   </div>
         
-                  <!-- Habilidades Técnicas -->
+                  <!-- Habilidades Técnicas
                   <h5>Habilidades Técnicas</h5>
                   <div id="habilidadesContainer">
                     <div class="input-group mb-3">
@@ -256,7 +234,7 @@
                   </div>
                   <button type="button" class="btn btn-primary" id="addHabilidad">Agregar Habilidad</button>
         
-                  <!-- Conocimientos -->
+                  <!-- Conocimientos
                   <h5>Conocimientos</h5>
                   <div id="conocimientosContainer">
                     <div class="input-group mb-3">
@@ -266,7 +244,7 @@
                   </div>
                   <button type="button" class="btn btn-primary" id="addConocimiento">Agregar Conocimiento</button>
         
-                  <!-- Cursos realizados -->
+                  <!-- Cursos realizados 
                   <div id="cursosContainer">
                     <div class="input-group mb-3">
                       <input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora">
@@ -277,7 +255,7 @@
                   </div>
                   <button type="button" class="btn btn-primary mb-3" id="addCurso" onclick="agregarCurso()">Agregar Curso</button>
         
-                  <!-- Experiencia laboral -->
+                  Experiencia laboral 
                   <h5>Experiencia Laboral</h5>
                   <div class="mb-3">
                     <label for="nombreEmpresa" class="form-label">Nombre de la empresa:</label>
@@ -303,7 +281,7 @@
             </div>
           </div>
         </div>
-        
+      -->
         
 
                         

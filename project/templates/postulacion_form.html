@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Postulación</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+
+        h1 {
+            color: #9A616D;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: #9A616D;
+            border-color: #9A616D;
+        }
+
+        .btn-primary:hover {
+            background-color: #7d4e58;
+            border-color: #7d4e58;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+        }
+
+        .card {
+            border-color: #9A616D;
+        }
+
+        .card-header {
+            background-color: #9A616D;
+            color: #ffffff;
+        }
+
+        #noResults {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'menu_postulante.html' %}
+    <div class="container py-5">
+        <div class="card">
+            <div class="card-header text-center">
+                <h1>Formulario de Postulación</h1>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('generar_pdf') }}" method="POST">
+                    <!-- Barra de búsqueda -->
+                    <!-- Campos del formulario -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="telefono" name="telefono" maxlength="10" pattern="\d{10}" required>
+                        </div>
+                    </div>
+    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="cedula" class="form-label">Cédula</label>
+                            <input type="text" id="cedula" name="cedula" class="form-control" maxlength="10" pattern="\d{10}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                    </div>
+    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="direccion" class="form-label">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edad" class="form-label">Edad:</label>
+                            <input type="number" class="form-control" id="edad" name="edad" min="18" max="70" required>
+                        </div>
+                    </div>
+    
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="cargoPostular" class="form-label">Cargo a Postular</label>
+                            <input type="text" class="form-control" id="cargoPostular" name="cargoPostular" required>
+                        </div>
+                    </div>
+    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción:</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Breve carta de presentación"></textarea>
+                    </div>
+    
+                    <!-- Habilidades -->
+                    <div class="d-flex align-items-start justify-content-between mb-4">
+                        <!-- Habilidades -->
+                        <div id="habilidadesContainer" class="me-3 w-50">
+                            <label for="habilidades" class="form-label">Habilidades</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="habilidades[]" placeholder="Ingrese una habilidad">
+                                <button type="button" class="btn btn-danger btn-remove-habilidad">Eliminar</button>
+                            </div>
+                            <button type="button" id="addHabilidad" class="btn btn-primary mt-2">Agregar Habilidad</button>
+                        </div>
+    
+                        <!-- Conocimientos -->
+                        <div id="conocimientosContainer" class="w-50">
+                            <label for="conocimientos" class="form-label">Conocimientos</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="conocimientos[]" placeholder="Ingrese un conocimiento">
+                                <button type="button" class="btn btn-danger btn-remove-conocimiento">Eliminar</button>
+                            </div>
+                            <button type="button" id="addConocimiento" class="btn btn-primary mt-2">Agregar Conocimiento</button>
+                        </div>
+                    </div>
+
+                    <h5>Educación</h5>
+                  <div class="mb-3">
+                    <label for="nivelEstudio" class="form-label">Nivel de estudio:</label>
+                    <input type="text" class="form-control" id="nivelEstudio" name="nivelEstudio">
+                  </div>
+        
+                  <div class="mb-3">
+                    <label for="estadoEstudio" class="form-label">Estado de estudio:</label>
+                    <input type="text" class="form-control" id="estadoEstudio" name="estadoEstudio">
+                  </div>
+        
+                  <div class="mb-3">
+                    <label for="nombreInstitucion" class="form-label">Nombre de la institución:</label>
+                    <input type="text" class="form-control" id="nombreInstitucion" name="nombreInstitucion">
+                  </div>
+    
+                    <!-- Cursos -->
+                    <h5>Cursos Realizados</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Empresa Certificadora</th>
+                                    <th>Nombre del Certificado</th>
+                                    <th>Fecha</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cursosContainer">
+                                <tr>
+                                    <td><input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora"></td>
+                                    <td><input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado"></td>
+                                    <td><input type="date" class="form-control" name="fechaCertificado[]"></td>
+                                    <td><button type="button" class="btn btn-danger" onclick="eliminarCurso(this)">Eliminar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button type="button" class="btn btn-primary mb-3" onclick="agregarCurso()">Agregar Curso</button>
+    
+                    <h5>Experiencia Laboral</h5>
+                    <div class="mb-3">
+                        <label for="nombreEmpresa" class="form-label">Nombre de la empresa:</label>
+                        <input type="text" class="form-control" id="nombreEmpresa" name="nombreEmpresa" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cargo" class="form-label">Cargo:</label>
+                        <input type="text" class="form-control" id="cargo" name="cargo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="funciones" class="form-label">Funciones principales:</label>
+                        <textarea class="form-control" id="funciones" name="funciones" rows="3" required></textarea>
+                    </div>
+    
+                    <!-- Enviar -->
+                    <button type="submit" class="btn btn-primary w-100 mt-4">Enviar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Script -->
+    <script>// Script completo con funcionalidades dinámicas del formulario
+       // Script proporcionado
+// Incluye todas las funcionalidades dinámicas del formulario (buscar, agregar habilidades, conocimientos y cursos)
+window.addEventListener('DOMContentLoaded', function () {
+    const noResultsMessage = document.createElement('p');
+    noResultsMessage.id = 'noResults';
+    noResultsMessage.className = 'text-center text-muted';
+    noResultsMessage.style.display = 'none';
+    noResultsMessage.textContent = 'No se encontraron puestos disponibles para esta búsqueda.';
+    document.getElementById('cursosContainer').appendChild(noResultsMessage);
+});
+
+function agregarCurso() {
+    const container = document.getElementById('cursosContainer');
+    const nuevaFila = document.createElement('tr');
+    nuevaFila.innerHTML = `
+        <td><input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora"></td>
+        <td><input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado"></td>
+        <td><input type="date" class="form-control" name="fechaCertificado[]"></td>
+        <td><button type="button" class="btn btn-danger" onclick="eliminarCurso(this)">Eliminar</button></td>
+    `;
+    container.appendChild(nuevaFila);
+}
+
+function eliminarCurso(button) {
+    button.closest('tr').remove();
+}
+
+document.getElementById('addHabilidad').addEventListener('click', () => {
+    const habilidadesContainer = document.getElementById('habilidadesContainer');
+    const newField = document.createElement('div');
+    newField.className = 'input-group mb-3';
+    newField.innerHTML = `
+        <input type="text" class="form-control" name="habilidades[]" placeholder="Ingrese una habilidad">
+        <button type="button" class="btn btn-danger btn-remove-habilidad">Eliminar</button>
+    `;
+    habilidadesContainer.appendChild(newField);
+});
+
+document.getElementById('habilidadesContainer').addEventListener('click', (e) => {
+    if (e.target.classList.contains('btn-remove-habilidad')) {
+        e.target.parentElement.remove();
+    }
+});
+
+document.getElementById('addConocimiento').addEventListener('click', () => {
+    const conocimientosContainer = document.getElementById('conocimientosContainer');
+    const newField = document.createElement('div');
+    newField.className = 'input-group mb-3';
+    newField.innerHTML = `
+        <input type="text" class="form-control" name="conocimientos[]" placeholder="Ingrese un conocimiento">
+        <button type="button" class="btn btn-danger btn-remove-conocimiento">Eliminar</button>
+    `;
+    conocimientosContainer.appendChild(newField);
+});
+
+document.getElementById('conocimientosContainer').addEventListener('click', (e) => {
+    if (e.target.classList.contains('btn-remove-conocimiento')) {
+        e.target.parentElement.remove();
+    }
+});
+
+// Validaciones de campos: evitar números en habilidades y conocimientos
+function validarTextoSinNumeros(input) {
+    input.addEventListener('input', () => {
+        if (/\d/.test(input.value)) {
+            input.value = input.value.replace(/\d/g, ''); // Eliminar números
+        }
+    });
+}
+
+// Aplicar validación inicial a los campos existentes
+document.querySelectorAll('[name="habilidades[]"], [name="conocimientos[]"]').forEach(validarTextoSinNumeros);
+
+// Validar dinámicamente los campos agregados
+document.getElementById('habilidadesContainer').addEventListener('input', (e) => {
+    if (e.target.name === 'habilidades[]') {
+        validarTextoSinNumeros(e.target);
+    }
+});
+
+document.getElementById('conocimientosContainer').addEventListener('input', (e) => {
+    if (e.target.name === 'conocimientos[]') {
+        validarTextoSinNumeros(e.target);
+    }
+});
+
+// Validación del formulario general
+const formulario = document.querySelector('form');
+
+formulario.addEventListener('submit', (e) => {
+    const errores = [];
+    const habilidades = document.querySelectorAll('[name="habilidades[]"]');
+    const conocimientos = document.querySelectorAll('[name="conocimientos[]"]');
+
+    habilidades.forEach((input) => {
+        if (/\d/.test(input.value)) {
+            errores.push('Las habilidades no deben contener números.');
+        }
+    });
+
+    conocimientos.forEach((input) => {
+        if (/\d/.test(input.value)) {
+            errores.push('Los conocimientos no deben contener números.');
+        }
+    });
+
+    if (errores.length > 0) {
+        e.preventDefault();
+        alert(errores.join('\n'));
+    }
+});
+
+ // Validar el campo de edad
+ document.getElementById('edad').addEventListener('input', function () {
+    const edad = this.value;
+    const edadMessage = document.getElementById('edadMessage');
+    if (edad.length > 2 || edad < 18 || edad > 70) {
+        if (!edadMessage) {
+            const message = document.createElement('div');
+            message.id = 'edadMessage';
+            message.classList.add('text-danger', 'mt-2');
+            message.textContent = 'La edad debe ser un número entre 18 y 70 años y tener dos dígitos.';
+            this.parentElement.appendChild(message);
+        }
+    } else {
+        if (edadMessage) edadMessage.remove();
+    }
+});
+
+// Validar el campo de teléfono
+document.getElementById('telefono').addEventListener('input', function () {
+    const telefono = this.value;
+    const telefonoMessage = document.getElementById('telefonoMessage');
+    // Verificar que el teléfono contenga solo números y tenga 10 dígitos
+    if (!/^\d{0,10}$/.test(telefono)) {
+        if (!telefonoMessage) {
+            const message = document.createElement('div');
+            message.id = 'telefonoMessage';
+            message.classList.add('text-danger', 'mt-2');
+            message.textContent = 'El teléfono debe contener solo números y tener 10 dígitos.';
+            this.parentElement.appendChild(message);
+        }
+    } else {
+        if (telefonoMessage) telefonoMessage.remove();
+    }
+});
+
+// Validación al enviar el formulario
+document.querySelector('form').addEventListener('submit', function (e) {
+    const edad = document.getElementById('edad').value;
+    const telefono = document.getElementById('telefono').value;
+
+    // Verificar si hay algún mensaje de advertencia y evitar el envío del formulario
+    if ((edad.length > 2 || edad < 18 || edad > 70) || !/^\d{10}$/.test(telefono)) {
+        e.preventDefault(); // Evitar el envío del formulario
+        alert('Por favor, corrige los errores en el formulario antes de enviarlo.');
+    }
+});
+ 
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

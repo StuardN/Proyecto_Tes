@@ -5,6 +5,7 @@
     <title>Categorías</title>
 </head>
 <body>
+    {% include 'menu_admin.html' %}
     <body class="bg-light">
         <div class="container my-5">
             <!-- Título principal -->
@@ -16,7 +17,7 @@
                     <h5 class="card-title">Agregar Nueva Categoría</h5>
                     <form method="POST" action="{{ url_for('categorias') }}" class="row g-3">
                         <div class="col-md-8">
-                            <input type="text" name="descripcion" class="form-control" placeholder="Descripción de la categoría" required>
+                            <input type="text" name="descripcion" class="form-control" placeholder="Descripción de la categoría" required pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" title="La descripción solo puede contener letras y espacios.">
                         </div>
                         <div class="col-md-4">
                             <button type="submit" class="btn btn-primary w-100">Agregar Categoría</button>

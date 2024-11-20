@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    {% include 'menu_admin.html' %}
 <div class="container mt-5">
     <h1>Editar Puesto</h1>
-    <form action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post" enctype="multipart/form-data">
+    <form id="editPuestoForm" action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="descripcion">Descripción</label>
             <input type="text" class="form-control" name="descripcion" value="{{ puesto.descripcion }}" required>
@@ -51,6 +52,26 @@
         <a href="{{ url_for('puestos') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
+<script>
+    document.getElementById("editPuestoForm").addEventListener("submit", function(event) {
+        const descripcion = document.querySelector('input[name="descripcion"]').value;
+        const perfil = document.querySelector('input[name="perfil"]').value;
+
+        // Validar que la descripción y perfil solo contengan letras
+        const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+        if (!regex.test(descripcion)) {
+            alert("La descripción solo debe contener letras.");
+            event.preventDefault();
+            return;
+        }
+        if (perfil && !regex.test(perfil)) {
+            alert("El perfil solo debe contener letras.");
+            event.preventDefault();
+            return;
+        }
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

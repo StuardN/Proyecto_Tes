@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+      {% include 'menu_admin.html' %}
     <div class="container mt-4">
         <h1>Lista de Usuarios</h1>
         <a href="{{ url_for('nuevo_usuario') }}" class="btn btn-primary mb-3">Agregar Usuario</a>
