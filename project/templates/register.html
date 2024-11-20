@@ -49,7 +49,12 @@
                                         <label for="formNombre">Nombre</label>
                                     </div>
                                     <div class="form-outline mb-4">
-                                        <input type="email" name="email" id="formEmail" class="form-control form-control-lg" maxlength="100" required />
+                                        <input type="email" name="email" id="formEmail" 
+       class="form-control form-control-lg" maxlength="100" 
+       required 
+       pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+       oninvalid="this.setCustomValidity('El correo debe incluir un punto después del @')" 
+       oninput="this.setCustomValidity('')" />
                                         <label for="formEmail">Correo Electrónico</label>
                                     </div>
                                     <div class="form-outline mb-4">
@@ -141,5 +146,4 @@
     });
   </script>
 </body>
-
 </html>

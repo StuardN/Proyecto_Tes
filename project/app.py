@@ -78,7 +78,6 @@ class Usuario(db.Model, UserMixin):
     def get_id(self):
         return str(self.id_usuario)
 
-
 class Categoria(db.Model):
     __tablename__ = 'Categorias'
     id_categoria = db.Column(db.Integer, primary_key=True)
@@ -259,7 +258,7 @@ def login():
             elif user.id_rol == 2:
                 return redirect(url_for('rrhh_dashboard'))
             elif user.id_rol == 3:
-                return redirect(url_for('postulante_dashboard'))
+                return redirect(url_for('postulante_1'))
         else:
             flash('Login incorrecto. Verifica tus credenciales.')
 
@@ -269,9 +268,9 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 @login_required  # Asegura que solo usuarios autenticados puedan acceder
 def register():
-    if current_user.id_rol != 1:  # Solo admin puede acceder
-        flash('No tienes permisos para acceder a esta sección.', 'danger')
-        return redirect(url_for('home'))  # Redirigir a una página apropiada
+   # if current_user.id_rol != 1:  # Solo admin puede acceder
+    #    flash('No tienes permisos para acceder a esta sección.', 'danger')
+     #   return redirect(url_for('home'))  # Redirigir a una página apropiada
 
     if request.method == 'POST':
         nombre_usuario = request.form.get('nombre_usuario')
@@ -458,19 +457,34 @@ def eliminar_categoria(id_categoria):
 
 # Ruta para ver todos los usuarios
 @app.route('/usuarios/crud')
+@login_required  # Asegura que el usuario esté autenticado
 def crud_usuarios():
-    usuarios = Usuario.query.all()  # Si necesitas pasar datos a la plantilla
+    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
+        flash('No tienes permisos para acceder a esta sección.', 'danger')
+        return redirect(url_for('home'))  # Redirige a una página adecuada
+
+    usuarios = Usuario.query.all()  # Obtener los datos de los usuarios
     return render_template('crud_user.html', usuarios=usuarios)
 
 # Ruta para listar usuarios
-@app.route('/usuarios')
+@app.route('/usuarios', methods=['GET'])
+@login_required  # Requiere autenticación
 def listar_usuarios():
+    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
+        flash('No tienes permisos para acceder a esta sección.', 'danger')
+        return redirect(url_for('home'))  # Redirigir a una página adecuada
+
     usuarios = Usuario.query.all()
     return render_template('crud_user.html', usuarios=usuarios)
 
 # Ruta para agregar un nuevo usuario
 @app.route('/usuarios/nuevo', methods=['GET', 'POST'])
+@login_required  # Requiere autenticación
 def nuevo_usuario():
+    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
+        flash('No tienes permisos para acceder a esta sección.', 'danger')
+        return redirect(url_for('home'))  # Redirigir a una página adecuada
+
     if request.method == 'POST':
         nombre = request.form['nombre']
         apellidos = request.form['apellidos']
@@ -489,16 +503,26 @@ def nuevo_usuario():
             id_rol=id_rol,
             estado='Activo'
         )
-        db.session.add(nuevo_usuario)
-        db.session.commit()
+        try:
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+            flash('Usuario creado exitosamente.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al crear el usuario: {str(e)}', 'danger')
 
         return redirect(url_for('listar_usuarios'))
 
     return render_template('nuevo_usuario.html')
 
-# Ruta para editar un usuario
+
 @app.route('/usuarios/editar/<int:id_usuario>', methods=['GET', 'POST'])
+@login_required  # Requiere autenticación
 def editar_usuario(id_usuario):
+    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
+        flash('No tienes permisos para acceder a esta sección.', 'danger')
+        return redirect(url_for('home'))  # Redirigir a una página adecuada
+
     usuario = Usuario.query.get_or_404(id_usuario)
 
     if request.method == 'POST':
@@ -510,23 +534,35 @@ def editar_usuario(id_usuario):
         usuario.nombre_usuario = nombre
         usuario.apellidos = apellidos
         usuario.email = email
-        db.session.commit()
+        try:
+            db.session.commit()
+            flash('Usuario actualizado exitosamente.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al actualizar el usuario: {str(e)}', 'danger')
 
-        flash('Usuario actualizado exitosamente', 'success')
         return redirect(url_for('listar_usuarios'))
 
     return render_template('editar_usuario.html', usuario=usuario)
 
-# Ruta para eliminar un usuario
+
 @app.route('/usuarios/eliminar/<int:id_usuario>', methods=['POST'])
+@login_required  # Requiere autenticación
 def eliminar_usuario(id_usuario):
+    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
+        flash('No tienes permisos para acceder a esta sección.', 'danger')
+        return redirect(url_for('home'))  # Redirigir a una página adecuada
+
     usuario = Usuario.query.get_or_404(id_usuario)
-    db.session.delete(usuario)
-    db.session.commit()
+    try:
+        db.session.delete(usuario)
+        db.session.commit()
+        flash('Usuario eliminado exitosamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el usuario: {str(e)}', 'danger')
 
-    flash('Usuario eliminado exitosamente', 'success')
     return redirect(url_for('listar_usuarios'))
-
 
 # Ejecutar la aplicación
 @app.route('/postulante_dashboard')
@@ -729,11 +765,7 @@ def enviar_pdf_por_correo(correo_destino, pdf_buffer, cargo_postular, nombre_pos
         print("Correo enviado exitosamente.")
     except Exception as e:
         print(f"Error al enviar el correo: {e}")
-
-
-        
-        
-        
+ 
 @app.route('/postulacion_form')
 @login_required
 def postulacion_form():

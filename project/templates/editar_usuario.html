@@ -5,33 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Usuario</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+        }
+    </style>
 </head>
 <body>
     {% include 'menu_admin.html' %}
     <div class="container mt-4">
         <h1>Editar Usuario</h1>
 
-        <!-- Mensaje de éxito o error -->
+        <!-- Mensaje de éxito o error 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
                     <div class="alert alert-{{ category }}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
-        {% endwith %}
+        {% endwith %}-->
 
-        <form id="editUserForm" method="POST">
+        <form id="editUserForm" method="POST" novalidate>
             <div class="form-group">
                 <label for="nombre_usuario">Nombre</label>
                 <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" value="{{ usuario.nombre_usuario }}" required>
+                <span id="nombreError" class="error-message"></span>
             </div>
             <div class="form-group">
                 <label for="apellidos">Apellidos</label>
                 <input type="text" class="form-control" id="apellidos" name="apellidos" value="{{ usuario.apellidos }}" required>
+                <span id="apellidosError" class="error-message"></span>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}" required>
+                <span id="emailError" class="error-message"></span>
             </div>
             <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
         </form>
@@ -40,29 +49,44 @@
 
     <script>
         document.getElementById("editUserForm").addEventListener("submit", function(event) {
-            const nombre = document.getElementById("nombre_usuario").value;
-            const apellidos = document.getElementById("apellidos").value;
-            const email = document.getElementById("email").value;
+            let valid = true;
 
-            // Validar que el nombre y los apellidos solo contengan letras
+            const nombre = document.getElementById("nombre_usuario");
+            const apellidos = document.getElementById("apellidos");
+            const email = document.getElementById("email");
+
+            const nombreError = document.getElementById("nombreError");
+            const apellidosError = document.getElementById("apellidosError");
+            const emailError = document.getElementById("emailError");
+
+            // Resetear mensajes de error
+            nombreError.textContent = "";
+            apellidosError.textContent = "";
+            emailError.textContent = "";
+
             const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-            if (!regexNombre.test(nombre)) {
-                alert("El nombre solo debe contener letras.");
-                event.preventDefault();
-                return;
-            }
-            if (!regexNombre.test(apellidos)) {
-                alert("Los apellidos solo deben contener letras.");
-                event.preventDefault();
-                return;
+            const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            // Validar nombre
+            if (!regexNombre.test(nombre.value)) {
+                nombreError.textContent = "El nombre solo debe contener letras.";
+                valid = false;
             }
 
-            // Validar el correo electrónico
-            const regexEmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-            if (!regexEmail.test(email)) {
-                alert("El correo debe ser de Gmail y tener un formato válido (ejemplo@gmail.com).");
-                event.preventDefault();
-                return;
+            // Validar apellidos
+            if (!regexNombre.test(apellidos.value)) {
+                apellidosError.textContent = "Los apellidos solo deben contener letras.";
+                valid = false;
+            }
+
+            // Validar correo
+            if (!regexEmail.test(email.value)) {
+                emailError.textContent = "El correo debe ser válido y contener '@' y '.'.";
+                valid = false;
+            }
+
+            if (!valid) {
+                event.preventDefault(); // Prevenir el envío del formulario
             }
         });
     </script>
@@ -70,7 +94,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 </body>
 {% include 'footer.html' %}
 </html>

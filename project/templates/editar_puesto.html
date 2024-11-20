@@ -5,19 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Puesto</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+        }
+    </style>
 </head>
 <body>
     {% include 'menu_admin.html' %}
 <div class="container mt-5">
     <h1>Editar Puesto</h1>
-    <form id="editPuestoForm" action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post" enctype="multipart/form-data">
+    <form id="editPuestoForm" action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post" enctype="multipart/form-data" novalidate>
         <div class="form-group">
             <label for="descripcion">Descripción</label>
             <input type="text" class="form-control" name="descripcion" value="{{ puesto.descripcion }}" required>
+            <span id="descripcionError" class="error-message"></span>
         </div>
         <div class="form-group">
             <label for="perfil">Perfil</label>
             <input type="text" class="form-control" name="perfil" value="{{ puesto.perfil }}">
+            <span id="perfilError" class="error-message"></span>
         </div>
         <div class="form-group">
             <label for="requisitos">Requisitos</label>
@@ -40,13 +48,16 @@
             <input type="file" class="form-control" name="imagen" accept="image/*">
         </div>
 
-        <!-- Mostrar imagen actual si existe -->
+        <!-- Mostrar imagen actual si existe (oculto por defecto) -->
+        {# Comentado para ocultar la vista previa de la imagen actual #}
+        <!-- 
         {% if puesto.imagen %}
             <div class="form-group">
                 <label>Imagen Actual</label>
                 <img src="{{ url_for('static', filename=puesto.imagen) }}" alt="Imagen del puesto" width="150">
             </div>
         {% endif %}
+        -->
 
         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
         <a href="{{ url_for('puestos') }}" class="btn btn-secondary">Cancelar</a>
@@ -55,20 +66,34 @@
 
 <script>
     document.getElementById("editPuestoForm").addEventListener("submit", function(event) {
-        const descripcion = document.querySelector('input[name="descripcion"]').value;
-        const perfil = document.querySelector('input[name="perfil"]').value;
+        let valid = true;
 
-        // Validar que la descripción y perfil solo contengan letras
+        const descripcion = document.querySelector('input[name="descripcion"]');
+        const perfil = document.querySelector('input[name="perfil"]');
+
+        const descripcionError = document.getElementById("descripcionError");
+        const perfilError = document.getElementById("perfilError");
+
+        // Resetear mensajes de error
+        descripcionError.textContent = "";
+        perfilError.textContent = "";
+
         const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-        if (!regex.test(descripcion)) {
-            alert("La descripción solo debe contener letras.");
-            event.preventDefault();
-            return;
+
+        // Validar descripción
+        if (!regex.test(descripcion.value)) {
+            descripcionError.textContent = "La descripción solo debe contener letras.";
+            valid = false;
         }
-        if (perfil && !regex.test(perfil)) {
-            alert("El perfil solo debe contener letras.");
-            event.preventDefault();
-            return;
+
+        // Validar perfil (si se proporciona)
+        if (perfil.value && !regex.test(perfil.value)) {
+            perfilError.textContent = "El perfil solo debe contener letras.";
+            valid = false;
+        }
+
+        if (!valid) {
+            event.preventDefault(); // Prevenir el envío del formulario
         }
     });
 </script>
