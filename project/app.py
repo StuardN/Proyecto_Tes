@@ -20,8 +20,15 @@ from wtforms import StringField, EmailField, IntegerField, FileField
 from wtforms.validators import InputRequired, Length, NumberRange, Email
 from flask_wtf.file import FileRequired, FileAllowed
 from datetime import datetime
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from io import BytesIO
+from flask import Flask, request, send_file
 import os
 import io
+
 
 
 load_dotenv()
@@ -266,7 +273,6 @@ def login():
 
 #Register
 @app.route('/register', methods=['GET', 'POST'])
-@login_required  # Asegura que solo usuarios autenticados puedan acceder
 def register():
    # if current_user.id_rol != 1:  # Solo admin puede acceder
     #    flash('No tienes permisos para acceder a esta sección.', 'danger')
@@ -388,181 +394,86 @@ def admin_page():
 @app.route('/home_user')
 def admin():
     return render_template('admin.html')
-
+# Ruta para ver y agregar categorías
 @app.route('/categorias', methods=['GET', 'POST'])
-@login_required  # Asegura que solo usuarios autenticados puedan acceder
+@login_required
 def categorias():
     if current_user.id_rol not in [1, 2]:  # Solo admin (1) y RRHH (2) pueden acceder
-        flash('No tienes permisos para acceder a esta sección.', 'danger')
-        return redirect(url_for('home'))  # Redirigir a una página apropiada
-
+        return "No tienes permisos para acceder a esta sección."
+    # Si tiene acceso, se puede cargar la plantilla con las categorías
     if request.method == 'POST':
-        nombre = request.form.get('descripcion')  # Usar 'descripcion' para coincidir con el formulario
-
-        # Validaciones básicas
-        if not nombre:
-            flash('El nombre de la categoría es obligatorio.', 'danger')
-            return redirect(url_for('categorias'))
-
-        # Crear nueva categoría
-        nueva_categoria = Categoria(descripcion=nombre)  # Cambiar a 'descripcion'
-        try:
-            db.session.add(nueva_categoria)
-            db.session.commit()
-            flash('Categoría creada exitosamente.', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Hubo un error al crear la categoría: {str(e)}', 'danger')
-
-    # Obtener todas las categorías existentes
-    categorias = Categoria.query.all()
-    return render_template('categorias.html', categorias=categorias)
+        pass  # Lógica para manejar la creación de categorías
+    return render_template('categorias.html', categorias=Categoria.query.all())
 
 # Ruta para editar una categoría
 @app.route('/editar_categoria/<int:id_categoria>', methods=['GET', 'POST'])
 @login_required
 def editar_categoria(id_categoria):
+    if current_user.id_rol not in [1, 2]:  # Solo admin y RRHH pueden acceder
+        return "No tienes permisos para acceder a esta sección."
+    # Lógica para cargar y actualizar la categoría
     categoria = Categoria.query.get_or_404(id_categoria)
-    
-    if request.method == 'POST':
-        categoria.descripcion = request.form.get('descripcion')
-        categoria.estado = request.form.get('estado')
-        
-        db.session.commit()
-        flash('Categoría actualizada exitosamente.')
-        return redirect(url_for('categorias'))
-
     return render_template('editar_categoria.html', categoria=categoria)
 
 # Ruta para eliminar una categoría
 @app.route('/eliminar_categoria/<int:id_categoria>', methods=['POST'])
 @login_required
 def eliminar_categoria(id_categoria):
-    categoria = Categoria.query.get_or_404(id_categoria)
-    puestos_asociados = Puesto.query.filter_by(id_categoria=id_categoria).all()
-    
-    if puestos_asociados:
-        mensaje = "No se puede eliminar la categoría porque está en uso. Puestos asociados:"
-        puestos = [p.descripcion for p in puestos_asociados]  # Asume que `descripcion` es el campo del puesto
-        return render_template("error.html", mensaje=mensaje, puestos=puestos)
-    
-    # Si no hay puestos asociados, procede a eliminar la categoría
-    db.session.delete(categoria)
-    db.session.commit()
-    flash('Categoría eliminada exitosamente.')
+    if current_user.id_rol not in [1, 2]:  # Solo admin y RRHH pueden acceder
+        return "No tienes permisos para acceder a esta sección."
+    # Lógica para eliminar la categoría si no hay puestos asociados
     return redirect(url_for('categorias'))
+
 
 
 ######################### Rutas usuarios #########################
 
 # Ruta para ver todos los usuarios
+# Ruta para ver todos los usuarios
 @app.route('/usuarios/crud')
-@login_required  # Asegura que el usuario esté autenticado
+@login_required
 def crud_usuarios():
-    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
-        flash('No tienes permisos para acceder a esta sección.', 'danger')
-        return redirect(url_for('home'))  # Redirige a una página adecuada
-
-    usuarios = Usuario.query.all()  # Obtener los datos de los usuarios
-    return render_template('crud_user.html', usuarios=usuarios)
+    if current_user.id_rol != 1:  # Verificar si el usuario es admin
+        return "No tienes permisos para acceder a esta sección."
+    return render_template('crud_user.html', usuarios=Usuario.query.all())
 
 # Ruta para listar usuarios
 @app.route('/usuarios', methods=['GET'])
-@login_required  # Requiere autenticación
+@login_required
 def listar_usuarios():
-    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
-        flash('No tienes permisos para acceder a esta sección.', 'danger')
-        return redirect(url_for('home'))  # Redirigir a una página adecuada
-
-    usuarios = Usuario.query.all()
-    return render_template('crud_user.html', usuarios=usuarios)
+    if current_user.id_rol != 1:
+        return "No tienes permisos para acceder a esta sección."
+    return render_template('crud_user.html', usuarios=Usuario.query.all())
 
 # Ruta para agregar un nuevo usuario
 @app.route('/usuarios/nuevo', methods=['GET', 'POST'])
-@login_required  # Requiere autenticación
+@login_required
 def nuevo_usuario():
-    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
-        flash('No tienes permisos para acceder a esta sección.', 'danger')
-        return redirect(url_for('home'))  # Redirigir a una página adecuada
-
+    if current_user.id_rol != 1:
+        return "No tienes permisos para acceder a esta sección."
     if request.method == 'POST':
-        nombre = request.form['nombre']
-        apellidos = request.form['apellidos']
-        email = request.form['email']
-        contraseña = request.form['contraseña']
-        id_rol = request.form['id_rol']
-
-        # Hash de la contraseña
-        contraseña_hash = generate_password_hash(contraseña)
-
-        nuevo_usuario = Usuario(
-            nombre_usuario=nombre,
-            apellidos=apellidos,
-            email=email,
-            contraseña=contraseña_hash,  # Contraseña encriptada
-            id_rol=id_rol,
-            estado='Activo'
-        )
-        try:
-            db.session.add(nuevo_usuario)
-            db.session.commit()
-            flash('Usuario creado exitosamente.', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error al crear el usuario: {str(e)}', 'danger')
-
-        return redirect(url_for('listar_usuarios'))
-
+        # Lógica de creación de usuario
+        pass
     return render_template('nuevo_usuario.html')
 
-
+# Ruta para editar un usuario existente
 @app.route('/usuarios/editar/<int:id_usuario>', methods=['GET', 'POST'])
-@login_required  # Requiere autenticación
+@login_required
 def editar_usuario(id_usuario):
-    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
-        flash('No tienes permisos para acceder a esta sección.', 'danger')
-        return redirect(url_for('home'))  # Redirigir a una página adecuada
+    if current_user.id_rol != 1:
+        return "No tienes permisos para acceder a esta sección."
+    # Lógica de edición de usuario
+    return render_template('editar_usuario.html', usuario=Usuario.query.get_or_404(id_usuario))
 
-    usuario = Usuario.query.get_or_404(id_usuario)
-
-    if request.method == 'POST':
-        nombre = request.form['nombre_usuario']
-        apellidos = request.form['apellidos']
-        email = request.form['email']
-
-        # Actualizar datos
-        usuario.nombre_usuario = nombre
-        usuario.apellidos = apellidos
-        usuario.email = email
-        try:
-            db.session.commit()
-            flash('Usuario actualizado exitosamente.', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error al actualizar el usuario: {str(e)}', 'danger')
-
-        return redirect(url_for('listar_usuarios'))
-
-    return render_template('editar_usuario.html', usuario=usuario)
-
-
+# Ruta para eliminar un usuario
 @app.route('/usuarios/eliminar/<int:id_usuario>', methods=['POST'])
-@login_required  # Requiere autenticación
+@login_required
 def eliminar_usuario(id_usuario):
-    if current_user.id_rol != 1:  # Solo el rol 1 (admin) tiene acceso
-        flash('No tienes permisos para acceder a esta sección.', 'danger')
-        return redirect(url_for('home'))  # Redirigir a una página adecuada
-
-    usuario = Usuario.query.get_or_404(id_usuario)
-    try:
-        db.session.delete(usuario)
-        db.session.commit()
-        flash('Usuario eliminado exitosamente.', 'success')
-    except Exception as e:
-        db.session.rollback()
-        flash(f'Error al eliminar el usuario: {str(e)}', 'danger')
-
+    if current_user.id_rol != 1:
+        return "No tienes permisos para acceder a esta sección."
+    # Lógica de eliminación de usuario
     return redirect(url_for('listar_usuarios'))
+
 
 # Ejecutar la aplicación
 @app.route('/postulante_dashboard')
@@ -588,13 +499,7 @@ def postulante_dashboard():
     
     return redirect(url_for('login'))
 
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
-from io import BytesIO
-from flask import Flask, request, send_file
-
+#Generacion de pdf
 
 @app.route('/generar_pdf', methods=['POST'])
 def generar_pdf():
