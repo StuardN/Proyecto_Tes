@@ -71,7 +71,7 @@
         </ul>
         {% if current_user.is_authenticated %}
           <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-custom">
+            <button type="submit" class="btn btn-dangerbtn-custom">
               Cerrar Sesión, {{ current_user.username }}
             </button>
           </form>

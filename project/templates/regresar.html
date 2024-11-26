@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Botón Regresar</title>
+  <style>
+    /* Restablecer márgenes y rellenos del documento */
+
+
+    /* Contenedor con posición relativa para posicionar el botón */
+    .btn-container {
+        position: relative; /* Establece la referencia para el botón */
+        margin-top: -10px; /* Espacio desde la parte superior */
+        left: 190px; /* Desplazamiento del botón desde la izquierda */
+    }
+
+    /* Estilos del botón */
+    .btn-regresar {
+        background-color: #9A616D; /* Color de fondo */
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Estilo del botón al pasar el ratón */
+    .btn-regresar:hover {
+        background-color: #7a4d56;
+    }
+    
+    /* Estilo del icono */
+    .btn-regresar i {
+        margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <br>
+  <br><br>
+  <!-- Contenedor con el botón -->
+  <div class="btn-container">
+    <button onclick="window.history.back();" class="btn-regresar">
+      <i class="fas fa-arrow-left"></i> Regresar
+    </button>
+  </div>
+
+  <!-- Agregar Font Awesome para el ícono -->
+  <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</body>
+</html>

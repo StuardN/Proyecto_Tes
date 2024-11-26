@@ -4,8 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Puesto</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
         .error-message {
             color: red;
             font-size: 0.875em;
@@ -14,93 +90,78 @@
 </head>
 <body>
     {% include 'menu_admin.html' %}
-<div class="container mt-5">
-    <h1>Editar Puesto</h1>
-    <form id="editPuestoForm" action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post" enctype="multipart/form-data" novalidate>
-        <div class="form-group">
-            <label for="descripcion">Descripción</label>
-            <input type="text" class="form-control" name="descripcion" value="{{ puesto.descripcion }}" required>
-            <span id="descripcionError" class="error-message"></span>
-        </div>
-        <div class="form-group">
-            <label for="perfil">Perfil</label>
-            <input type="text" class="form-control" name="perfil" value="{{ puesto.perfil }}">
-            <span id="perfilError" class="error-message"></span>
-        </div>
-        <div class="form-group">
-            <label for="requisitos">Requisitos</label>
-            <input type="text" class="form-control" name="requisitos" value="{{ puesto.requisitos }}">
-        </div>
-        <div class="form-group">
-            <label for="id_categoria">Categoría</label>
-            <select class="form-control" name="id_categoria" required>
-                {% for categoria in categorias %}
-                    <option value="{{ categoria.id_categoria }}" {% if categoria.id_categoria == puesto.id_categoria %}selected{% endif %}>
-                        {{ categoria.descripcion }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <!-- Campo para cambiar la imagen -->
-        <div class="form-group">
-            <label for="imagen">Imagen</label>
-            <input type="file" class="form-control" name="imagen" accept="image/*">
-        </div>
-
-        <!-- Mostrar imagen actual si existe (oculto por defecto) -->
-        {# Comentado para ocultar la vista previa de la imagen actual #}
-        <!-- 
-        {% if puesto.imagen %}
+    {% include 'regresar.html' %}
+    <div class="container">
+        <h1>Editar Puesto</h1>
+        <form id="editPuestoForm" action="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" method="post" enctype="multipart/form-data" novalidate>
             <div class="form-group">
-                <label>Imagen Actual</label>
-                <img src="{{ url_for('static', filename=puesto.imagen) }}" alt="Imagen del puesto" width="150">
+                <label for="descripcion">Descripción</label>
+                <input type="text" name="descripcion" value="{{ puesto.descripcion }}" required>
+                <span id="descripcionError" class="error-message"></span>
             </div>
-        {% endif %}
-        -->
+            <div class="form-group">
+                <label for="perfil">Perfil</label>
+                <input type="text" name="perfil" value="{{ puesto.perfil }}">
+                <span id="perfilError" class="error-message"></span>
+            </div>
+            <div class="form-group">
+                <label for="requisitos">Requisitos</label>
+                <input type="text" name="requisitos" value="{{ puesto.requisitos }}">
+            </div>
+            <div class="form-group">
+                <label for="id_categoria">Categoría</label>
+                <select name="id_categoria" required>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id_categoria }}" {% if categoria.id_categoria == puesto.id_categoria %}selected{% endif %}>
+                            {{ categoria.descripcion }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        <a href="{{ url_for('puestos') }}" class="btn btn-secondary">Cancelar</a>
-    </form>
-</div>
+            <div class="form-group">
+                <label for="imagen">Imagen</label>
+                <input type="file" name="imagen" accept="image/*">
+            </div>
 
-<script>
-    document.getElementById("editPuestoForm").addEventListener("submit", function(event) {
-        let valid = true;
+            <button type="submit" class="btn" style="background-color: #9A616D; color: white; border: none;">Guardar Cambios</button>
+            <a href="{{ url_for('puestos') }}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
 
-        const descripcion = document.querySelector('input[name="descripcion"]');
-        const perfil = document.querySelector('input[name="perfil"]');
+    <script>
+        document.getElementById("editPuestoForm").addEventListener("submit", function(event) {
+            let valid = true;
 
-        const descripcionError = document.getElementById("descripcionError");
-        const perfilError = document.getElementById("perfilError");
+            const descripcion = document.querySelector('input[name="descripcion"]');
+            const perfil = document.querySelector('input[name="perfil"]');
 
-        // Resetear mensajes de error
-        descripcionError.textContent = "";
-        perfilError.textContent = "";
+            const descripcionError = document.getElementById("descripcionError");
+            const perfilError = document.getElementById("perfilError");
 
-        const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+            // Resetear mensajes de error
+            descripcionError.textContent = "";
+            perfilError.textContent = "";
 
-        // Validar descripción
-        if (!regex.test(descripcion.value)) {
-            descripcionError.textContent = "La descripción solo debe contener letras.";
-            valid = false;
-        }
+            const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
 
-        // Validar perfil (si se proporciona)
-        if (perfil.value && !regex.test(perfil.value)) {
-            perfilError.textContent = "El perfil solo debe contener letras.";
-            valid = false;
-        }
+            // Validar descripción
+            if (!regex.test(descripcion.value)) {
+                descripcionError.textContent = "La descripción solo debe contener letras.";
+                valid = false;
+            }
 
-        if (!valid) {
-            event.preventDefault(); // Prevenir el envío del formulario
-        }
-    });
-</script>
+            // Validar perfil (si se proporciona)
+            if (perfil.value && !regex.test(perfil.value)) {
+                perfilError.textContent = "El perfil solo debe contener letras.";
+                valid = false;
+            }
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            if (!valid) {
+                event.preventDefault(); // Prevenir el envío del formulario
+            }
+        });
+    </script>
 </body>
 {% include 'footer.html' %}
 </html>

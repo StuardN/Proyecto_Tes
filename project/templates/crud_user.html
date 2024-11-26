@@ -4,53 +4,211 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD de Usuarios</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* General */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #9A616D;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 1rem;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            background-color: #9A616D;
+            border: 1px solid #9A616D;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            background-color: #834b57;
+        }
+
+        .alert {
+            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        /* Tabla */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .table thead th {
+            background-color: #9A616D;
+            color: white;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+
+        .table tbody tr:hover {
+            background-color: #ddd;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        form {
+            display: inline;
+        }
+
+        /* Responsividad */
+        @media (max-width: 768px) {
+            .table, .table thead, .table tbody, .table th, .table td, .table tr {
+                display: block;
+                width: 100%;
+            }
+
+            .table thead {
+                display: none;
+            }
+
+            .table tr {
+                margin-bottom: 15px;
+                border-bottom: 2px solid #ddd;
+                padding: 10px 0;
+            }
+
+            .table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+                padding: 5px 10px;
+                font-size: 0.9rem;
+            }
+
+            .table td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                width: 50%;
+                color: #555;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-      {% include 'menu_admin.html' %}
-    <div class="container mt-4">
+    {% include 'menu_admin.html' %}
+    {% include 'regresar.html' %}
+    <div class="container">
         <h1>Lista de Usuarios</h1>
-        <a href="{{ url_for('nuevo_usuario') }}" class="btn btn-primary mb-3">Agregar Usuario</a>
+
+        <!-- Botón para agregar un nuevo usuario -->
+        <a href="{{ url_for('nuevo_usuario') }}" class="btn" style="background-color: #9A616D; color: white; border: none;">Agregar Usuario</a>
         
         <!-- Mensaje de éxito o error -->
         {% if message %}
-            <div class="alert alert-success" role="alert">{{ message }}</div>
+            <div class="alert">{{ message }}</div>
         {% endif %}
         
-        <table class="table table-striped">
-            <thead class="thead-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Apellidos</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usuario in usuarios %}
-                <tr>
-                    <td>{{ usuario.id_usuario }}</td>
-                    <td>{{ usuario.nombre_usuario }}</td>
-                    <td>{{ usuario.apellidos }}</td>
-                    <td>{{ usuario.email }}</td>
-                    <td>
-                        <a href="{{ url_for('editar_usuario', id_usuario=usuario.id_usuario) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="{{ url_for('eliminar_usuario', id_usuario=usuario.id_usuario) }}" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
-                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- Tabla de usuarios -->
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellidos</th>
+                        <th>Email</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td data-label="ID">{{ usuario.id_usuario }}</td>
+                        <td data-label="Nombre">{{ usuario.nombre_usuario }}</td>
+                        <td data-label="Apellidos">{{ usuario.apellidos }}</td>
+                        <td data-label="Email">{{ usuario.email }}</td>
+                        <td data-label="Acciones">
+                            <div class="actions">
+                                <!-- Botón de editar -->
+                                <a href="{{ url_for('editar_usuario', id_usuario=usuario.id_usuario) }}" class="btn btn-warning btn-sm">Editar</a>
+                                <!-- Botón de eliminar -->
+                                <form action="{{ url_for('eliminar_usuario', id_usuario=usuario.id_usuario) }}" method="post">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">Eliminar</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% include 'footer.html' %}
 </body>
-{% include 'footer.html' %}
 </html>

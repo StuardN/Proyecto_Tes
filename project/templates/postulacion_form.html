@@ -8,10 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
-            color: #343a40;
-        }
+      
 
         h1 {
             color: #9A616D;
@@ -52,362 +49,725 @@
         .is-invalid {
             border-color: #dc3545; /* Color rojo para campos vacíos */
         }
+        body {
+    font-family: Arial, sans-serif;
+}
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 15px;
+}
+
+/* Tarjeta del formulario */
+.form-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Encabezado de la tarjeta */
+.form-header {
+    background-color: #9A616D;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.form-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Secciones del formulario */
+.form-section {
+    border-top: 1px solid #ddd;
+    padding: 20px;
+}
+
+.section-header {
+    background-color: #9A616D;
+    color: white;
+    padding: 10px;
+    margin: -20px -20px 20px -20px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.section-body {
+    padding: 10px 0;
+}
+
+/* Filas y columnas del formulario */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* Botones */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.btn-remove {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-remove:hover {
+    background-color: #c0392b;
+}
+
+#addConocimiento,
+#agregar-educacion,
+#addExperiencia,
+#addCurso {
+    background-color: #9A616D;
+    color: white;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.btn-submit {
+    background-color: #007bff;
+    color: white;
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+.btn-submit:hover {
+    background-color: #0056b3;
+}
+
+/* Habilidades y Conocimientos */
+.form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-check input {
+    margin-right: 10px;
+}
+
+/* Educación y Experiencia */
+#educacion-container,
+#experienciaContainer {
+    margin-top: 10px;
+}
+
+.educacion-item,
+.experiencia-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+    }
+}
+
     </style>
 </head>
-
 <body>
     {% include 'menu_postulante.html' %}
-    <div class="container py-5">
-        <div class="card">
-            <div class="card-header text-center">
+
+    <div class="container">
+        <div class="form-card">
+            <div class="form-header">
                 <h1>Formulario de Postulación</h1>
             </div>
-            <div class="card-body">
-                <form action="{{ url_for('generar_pdf') }}" method="POST">
-                    <!-- Barra de búsqueda -->
-                    <!-- Campos del formulario -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="nombre" class="form-label">Nombre</label>
-                            <input type="text" id="nombre" name="nombre" class="form-control" required>
+            <div class="form-body">
+                <form action="{{ url_for('generar_pdf') }}" method="POST" id="formPostulante">
+
+                    <!-- Sección: Datos Personales -->
+                    <div class="form-section" id="datosPersonales">
+                        <div class="section-header">
+                            <h5>Datos Personales</h5>
                         </div>
-                        <div class="col-md-6">
-                            <label for="telefono" class="form-label">Teléfono</label>
-                            <input type="tel" class="form-control" id="telefono" name="telefono" maxlength="10" pattern="\d{10}" required>
-                        </div>
-                    </div>
-    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="cedula" class="form-label">Cédula</label>
-                            <input type="text" id="cedula" name="cedula" class="form-control" maxlength="10" pattern="\d{10}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" name="email" class="form-control" required>
-                        </div>
-                    </div>
-    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="direccion" class="form-label">Dirección</label>
-                            <input type="text" id="direccion" name="direccion" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="edad" class="form-label">Edad:</label>
-                            <input type="number" class="form-control" id="edad" name="edad" min="18" max="70" required>
-                        </div>
-                    </div>
-    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="cargoPostular" class="form-label">Cargo a Postular</label>
-                            <input type="text" class="form-control" id="cargoPostular" name="cargoPostular" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="descripcion" class="form-label">Descripción:</label>
-                            <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Breve carta de presentación"></textarea>
-                        </div>
-                    </div>
-    
-                   
-    
-                    <!-- Habilidades -->
-                    <div class="d-flex align-items-start justify-content-between mb-4">
-                        <!-- Habilidades -->
-                        <div id="habilidadesContainer" class="d-flex justify-content-between w-100">
-                            <!-- Columna izquierda -->
-                            <div class="me-3 w-50">
-                                <label class="form-label"><h5>Habilidades (Columna Izquierda)</h5></label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="comunicacionEfectiva" name="habilidades[]" value="Comunicación efectiva">
-                                    <label class="form-check-label" for="comunicacionEfectiva">Comunicación efectiva</label>
+                        <div class="section-body">
+                            <!-- Campos de Datos Personales -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre</label>
+                                    <input type="text" id="nombre" name="nombre" required>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="escuchaActiva" name="habilidades[]" value="Escucha activa">
-                                    <label class="form-check-label" for="escuchaActiva">Escucha activa</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="redaccionProfesional" name="habilidades[]" value="Redacción profesional">
-                                    <label class="form-check-label" for="redaccionProfesional">Redacción profesional</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="trabajoEquipo" name="habilidades[]" value="Trabajo en equipo">
-                                    <label class="form-check-label" for="trabajoEquipo">Trabajo en equipo</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="resolucionConflictos" name="habilidades[]" value="Resolución de conflictos">
-                                    <label class="form-check-label" for="resolucionConflictos">Resolución de conflictos</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="empatia" name="habilidades[]" value="Empatía">
-                                    <label class="form-check-label" for="empatia">Empatía</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="gestionTiempo" name="habilidades[]" value="Gestión del tiempo">
-                                    <label class="form-check-label" for="gestionTiempo">Gestión del tiempo</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="planificacionOrganizacion" name="habilidades[]" value="Planificación y organización">
-                                    <label class="form-check-label" for="planificacionOrganizacion">Planificación y organización</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="manejoProyectos" name="habilidades[]" value="Manejo de proyectos">
-                                    <label class="form-check-label" for="manejoProyectos">Manejo de proyectos</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="pensamientoCritico" name="habilidades[]" value="Pensamiento crítico">
-                                    <label class="form-check-label" for="pensamientoCritico">Pensamiento crítico</label>
+                                <div class="form-group">
+                                    <label for="telefono">Teléfono</label>
+                                    <input type="tel" id="telefono" name="telefono" maxlength="10" pattern="\d{10}" required>
                                 </div>
                             </div>
-                        
-                            <!-- Columna derecha -->
-                            <div class="w-50">
-                                <label class="form-label"><h5>Habilidades</h5></label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="adaptabilidad" name="habilidades[]" value="Adaptabilidad">
-                                    <label class="form-check-label" for="adaptabilidad">Adaptabilidad</label>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cedula">Cédula</label>
+                                    <input type="text" id="cedula" name="cedula" maxlength="10" pattern="\d{10}" required>
+                                    <div id="cedulaMessage" class="text-danger"></div>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="creatividad" name="habilidades[]" value="Creatividad">
-                                    <label class="form-check-label" for="creatividad">Creatividad</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="manejoHerramientas" name="habilidades[]" value="Manejo de herramientas digitales">
-                                    <label class="form-check-label" for="manejoHerramientas">Manejo de herramientas digitales</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="aprendizajeRapido" name="habilidades[]" value="Aprendizaje rápido">
-                                    <label class="form-check-label" for="aprendizajeRapido">Aprendizaje rápido</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="analisisDatos" name="habilidades[]" value="Análisis de datos">
-                                    <label class="form-check-label" for="analisisDatos">Análisis de datos</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="tomaDecisiones" name="habilidades[]" value="Toma de decisiones">
-                                    <label class="form-check-label" for="tomaDecisiones">Toma de decisiones</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="motivacionEquipos" name="habilidades[]" value="Motivación de equipos">
-                                    <label class="form-check-label" for="motivacionEquipos">Motivación de equipos</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="negociacion" name="habilidades[]" value="Negociación">
-                                    <label class="form-check-label" for="negociacion">Negociación</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="eticaLaboral" name="habilidades[]" value="Ética laboral">
-                                    <label class="form-check-label" for="eticaLaboral">Ética laboral</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="atencionDetalle" name="habilidades[]" value="Atención al detalle">
-                                    <label class="form-check-label" for="atencionDetalle">Atención al detalle</label>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" required>
                                 </div>
                             </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="direccion">Dirección</label>
+                                    <input type="text" id="direccion" name="direccion" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edad">Edad</label>
+                                    <input type="number" id="edad" name="edad" min="18" max="70" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cargoPostular">Cargo a Postular</label>
+                                    <select id="cargoPostular" name="cargoPostular" required>
+                                        <option value="" disabled selected>Selecciona un cargo</option>
+                                        <option value="desarrollador">Desarrollador de Software</option>
+                                        <option value="analista">Analista de Sistemas</option>
+                                        <option value="gerente">Gerente de Proyecto</option>
+                                        <option value="diseñador">Diseñador Gráfico</option>
+                                        <option value="administrador">Administrador de Base de Datos</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-footer">
+                            <button type="button" class="btn-next" onclick="nextSection('datosPersonales', 'habilidades')">Siguiente</button>
                         </div>
                     </div>
 
-                    
-                        <!-- Conocimientos -->
-                        <h5>Conocimiento</h5>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                            <label for="conocimientos" class="form-label"></label>
+                    <!-- Sección: Habilidades y Conocimientos -->
+                    <div class="form-section" id="habilidades" style="display:none;">
+                        <div class="section-header">
+                            <h5>Habilidades y Conocimientos</h5>
+                        </div>
+                        <div class="section-body">
+                            <!-- Habilidades -->
+                            <h6>Habilidades</h6>
+                            <div class="form-row">
+                                <div class="form-check">
+                                    <input type="checkbox" id="comunicacionEfectiva" name="habilidades[]" value="Comunicación efectiva">
+                                    <label for="comunicacionEfectiva">Comunicación efectiva</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="creatividad" name="habilidades[]" value="Creatividad">
+                                    <label for="creatividad">Creatividad</label>
+                                </div>
+                            </div>
+                            <!-- Conocimientos -->
+                            <h6>Conocimientos</h6>
+                            <div id="conocimientosContainer">
+                                <div class="form-row">
+                                    <input type="text" name="conocimientos[]" placeholder="Ingrese un conocimiento">
+                                    <button type="button" class="btn-remove" onclick="removeConocimiento(this)">Eliminar</button>
+                                </div>
+                            </div>
+                            <button type="button" id="addConocimiento" onclick="addConocimiento()">Agregar Conocimiento</button>
+                           
+                        </div>
+                        <button type="button" class="btn-next" onclick="nextSection('habilidades', 'educacion')">Siguiente</button>
+                        <button type="button" class="btn-prev" onclick="previousSection('habilidades', 'datosPersonales')">Regresar</button>
+                    </div>
+
+                    <!-- Sección: Educación -->
+                    <div class="form-section" id="educacion" style="display:none;">
+                        <div class="section-header">
+                            <h5>Educación</h5>
+                        </div>
+                        <div id="educacion-container">
+                            <div class="educacion-item">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="nivelEstudio">Nivel de estudio</label>
+                                        <select name="nivelEstudio[]">
+                                            <option value="Profesional universitario">Profesional universitario</option>
+                                            <option value="Masterado">Masterado</option>
+                                            <option value="Doctorado">Doctorado</option>
+                                            <option value="Tecnico">Técnico</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="estadoEstudio">Estado de estudio</label>
+                                        <select name="estadoEstudio[]">
+                                            <option value="En curso">En curso</option>
+                                            <option value="Egresado">Egresado</option>
+                                            <option value="Culminado">Culminado</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nombreInstitucion">Nombre de la institución</label>
+                                        <input type="text" name="nombreInstitucion[]">
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-danger btn-eliminar" onclick="removeEducacion(this)">Eliminar</button>
+                                <button type="button" id="agregar-educacion" onclick="addEducacion()">Agregar educación</button>
+                            </div>
+                        </div>
+                     
+                        <button type="button" class="btn-next" onclick="nextSection('educacion', 'cursos')">Siguiente</button>
+                        <button type="button" class="btn-prev" onclick="previousSection('educacion', 'habilidades')">Regresar</button>
+                    </div>
+
+                    <!-- Sección: Cursos y Certificados -->
+                    <div class="form-section" id="cursos" style="display:none;">
+                        <div class="section-header">
+                            <h5>Cursos y Certificados</h5>
+                        </div>
+                        <div id="cursosContainer">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" name="conocimientos[]" placeholder="Ingrese un conocimiento">
-                                <button type="button" class="btn btn-danger btn-remove-conocimiento">Eliminar</button>
+                                <input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora">
+                                <input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado">
+                                <input type="date" class="form-control" name="fechaCertificado[]">
+                                <button type="button" class="btn btn-danger btn-remove-curso" onclick="removeCurso(this)">Eliminar</button>
                             </div>
-                            <button type="button" id="addConocimiento" class="btn btn-primary mt-2">Agregar Conocimiento</button>
+                        </div>
+                        <button type="button" class="btn mb-3" id="addCurso" onclick="addCurso()">Agregar Curso</button>
+                        <div>
+                            <button type="button" class="btn-next" onclick="nextSection('cursos', 'experiencia')">Siguiente</button>
+                            <button type="button" class="btn-prev" onclick="previousSection('cursos', 'educacion')">Regresar</button>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Sección: Experiencia Laboral -->
+                    <div class="form-section" id="experiencia" style="display:none;">
+                        <div class="section-header">
+                            <h5>Experiencia Laboral</h5>
+                        </div>
+                        <div id="experienciaContainer">
+                            <div class="experiencia-item mb-3">
+                                <label for="nombreEmpresa" class="form-label">Nombre de la empresa:</label>
+                                <input type="text" class="form-control" name="nombreEmpresa[]" required>
+
+                                <label for="cargo" class="form-label">Cargo:</label>
+                                <input type="text" class="form-control" name="cargo[]" required>
+
+                                <label for="funciones" class="form-label">Funciones principales:</label>
+                                <textarea class="form-control" name="funciones[]" rows="3" required></textarea>
+
+                                <button type="button" class="btn btn-danger btn-remove-experiencia mt-2" onclick="removeExperiencia(this)">Eliminar</button>
+                                <button type="button" class="btn" id="addExperiencia" onclick="addExperiencia()">Agregar experiencia</button>
+                            </div>
+                            
+                        </div>
+                        
+                        <button type="button" class="btn-prev" onclick="previousSection('experiencia', 'cursos')">Regresar</button>
+                        <div class="form-footer">
+                            <button type="submit" class="btn-submit">Enviar</button>
                         </div>
                     </div>
 
-                    <h5>Educación</h5>
-                    <div class="row mb-3">
-                        <!-- Nivel de estudio -->
-                        <div class="col-md-6">
-                            <label for="nivelEstudio" class="form-label">Nivel de estudio:</label>
-                            <select class="form-control" id="nivelEstudio" name="nivelEstudio">
-                                <option value="Profesional universitario">Profesional universitario</option>
-                                <option value="Masterado">Masterado</option>
-                            </select>
-                        </div>
-                    
-                        <!-- Estado de estudio -->
-                        <div class="col-md-6">
-                            <label for="estadoEstudio" class="form-label">Estado de estudio:</label>
-                            <select class="form-control" id="estadoEstudio" name="estadoEstudio">
-                                <option value="En curso">En curso</option>
-                                <option value="Egresado">Egresado</option>
-                                <option value="Culminado">Culminado</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-        
-                  <div class="mb-3">
-                    <label for="nombreInstitucion" class="form-label">Nombre de la institución:</label>
-                    <input type="text" class="form-control" id="nombreInstitucion" name="nombreInstitucion">
-                  </div>
-    
-                    <!-- Cursos -->
-                    <h5>Cursos Realizados</h5>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Empresa Certificadora</th>
-                                    <th>Nombre del Certificado</th>
-                                    <th>Fecha</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cursosContainer">
-                                <tr>
-                                    <td><input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora"></td>
-                                    <td><input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado"></td>
-                                    <td><input type="date" class="form-control" name="fechaCertificado[]"></td>
-                                    <td><button type="button" class="btn btn-danger" onclick="eliminarCurso(this)">Eliminar</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <button type="button" class="btn btn-primary mb-3" onclick="agregarCurso()">Agregar Curso</button>
-    
-                    <h5>Experiencia Laboral</h5>
-                    <div class="mb-3">
-                        <label for="nombreEmpresa" class="form-label">Nombre de la empresa:</label>
-                        <input type="text" class="form-control" id="nombreEmpresa" name="nombreEmpresa" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="cargo" class="form-label">Cargo:</label>
-                        <input type="text" class="form-control" id="cargo" name="cargo" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="funciones" class="form-label">Funciones principales:</label>
-                        <textarea class="form-control" id="funciones" name="funciones" rows="3" required></textarea>
-                    </div>
-    
-                    <!-- Enviar -->
-                    <button type="submit" class="btn btn-primary w-100 mt-4">Enviar</button>
                 </form>
             </div>
         </div>
     </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Elemento de mensaje cuando no hay resultados
-            const noResultsMessage = document.createElement('p');
-            noResultsMessage.id = 'noResults';
-            noResultsMessage.className = 'text-center text-muted';
-            noResultsMessage.style.display = 'none';
-            noResultsMessage.textContent = 'No se encontraron puestos disponibles para esta búsqueda.';
-            document.getElementById('cursosContainer').appendChild(noResultsMessage);
-    
-            // Eventos dinámicos para conocimientos
-            const conocimientosContainer = document.getElementById('conocimientosContainer');
-            document.getElementById('addConocimiento').addEventListener('click', function () {
-                const conocimientoField = document.createElement('div');
-                conocimientoField.className = 'input-group mb-3';
-                conocimientoField.innerHTML = `
-                    <input type="text" class="form-control" name="conocimientos[]" placeholder="Ingrese un conocimiento">
-                    <button type="button" class="btn btn-danger btn-remove-conocimiento">Eliminar</button>
-                `;
-                conocimientosContainer.appendChild(conocimientoField);
-    
-                // Validación en el campo agregado
-                const inputField = conocimientoField.querySelector('input');
-                validarTextoSinNumeros(inputField);
-    
-                // Botón para eliminar conocimiento
-                conocimientoField.querySelector('.btn-remove-conocimiento').addEventListener('click', function () {
-                    conocimientoField.remove();
-                });
-            });
-    
-            // Agregar cursos
-            document.getElementById('addCurso').addEventListener('click', function () {
-                const container = document.getElementById('cursosContainer');
-                const nuevaFila = document.createElement('tr');
-                nuevaFila.innerHTML = `
-                    <td><input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora"></td>
-                    <td><input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado"></td>
-                    <td><input type="date" class="form-control" name="fechaCertificado[]"></td>
-                    <td><button type="button" class="btn btn-danger" onclick="eliminarCurso(this)">Eliminar</button></td>
-                `;
-                container.appendChild(nuevaFila);
-            });
-    
-            // Validar edad y teléfono
-            document.getElementById('edad').addEventListener('input', function () {
-                const edad = this.value;
-                const edadMessage = document.getElementById('edadMessage');
-                if (edad.length > 2 || edad < 18 || edad > 70) {
-                    if (!edadMessage) {
-                        const message = document.createElement('div');
-                        message.id = 'edadMessage';
-                        message.classList.add('text-danger', 'mt-2');
-                        message.textContent = 'La edad debe estar entre 18 y 70 años.';
-                        this.parentElement.appendChild(message);
-                    }
-                } else {
-                    if (edadMessage) edadMessage.remove();
-                }
-            });
-    
-            document.getElementById('telefono').addEventListener('input', function () {
-                const telefono = this.value;
-                const telefonoMessage = document.getElementById('telefonoMessage');
-                if (!/^\d{0,10}$/.test(telefono)) {
-                    if (!telefonoMessage) {
-                        const message = document.createElement('div');
-                        message.id = 'telefonoMessage';
-                        message.classList.add('text-danger', 'mt-2');
-                        message.textContent = 'El teléfono debe tener 10 dígitos y solo números.';
-                        this.parentElement.appendChild(message);
-                    }
-                } else {
-                    if (telefonoMessage) telefonoMessage.remove();
-                }
-            });
-    
-            // Validar formulario completo
-            document.querySelector('form').addEventListener('submit', function (e) {
-                const errores = [];
-                const conocimientos = document.querySelectorAll('input[name="conocimientos[]"]');
-    
-                conocimientos.forEach(input => {
-                    if (/\d/.test(input.value)) {
-                        errores.push('Los conocimientos no deben contener números.');
-                    }
-                });
-    
-                if (errores.length > 0) {
-                    e.preventDefault();
-                    alert(errores.join('\n'));
-                }
-            });
-        });
-    
-        // Función para eliminar cursos
-        function eliminarCurso(button) {
-            button.closest('tr').remove();
+        // Funciones de navegación entre secciones
+        function nextSection(currentSectionId, nextSectionId) {
+            var currentSection = document.getElementById(currentSectionId);
+            var nextSection = document.getElementById(nextSectionId);
+
+            if (validateSection(currentSectionId)) {
+                currentSection.style.display = 'none';
+                nextSection.style.display = 'block';
+            }
         }
-    
-        // Validación para evitar números en campos de texto
-        function validarTextoSinNumeros(input) {
-            input.addEventListener('input', () => {
-                if (/\d/.test(input.value)) {
-                    input.value = input.value.replace(/\d/g, '');
+
+        function previousSection(currentSectionId, previousSectionId) {
+            var currentSection = document.getElementById(currentSectionId);
+            var previousSection = document.getElementById(previousSectionId);
+
+            currentSection.style.display = 'none';
+            previousSection.style.display = 'block';
+        }
+
+        // Validación de campos en cada sección
+        function validateSection(sectionId) {
+            var section = document.getElementById(sectionId);
+            var inputs = section.querySelectorAll('input[required], textarea[required]');
+            for (var input of inputs) {
+                if (!input.value) {
+                    alert('Por favor, completa todos los campos requeridos.');
+                    return false;
                 }
-            });
+            }
+            return true;
+        }
+
+        // Funciones para agregar y eliminar elementos
+        function addConocimiento() {
+            var container = document.getElementById('conocimientosContainer');
+            var newRow = document.createElement('div');
+            newRow.classList.add('form-row');
+            newRow.innerHTML = `<input type="text" name="conocimientos[]" placeholder="Ingrese un conocimiento">
+                                <button type="button" class="btn-remove" onclick="removeConocimiento(this)">Eliminar</button>`;
+            container.appendChild(newRow);
+        }
+
+        function removeConocimiento(button) {
+            button.parentElement.remove();
+        }
+
+        function addEducacion() {
+            var container = document.getElementById('educacion-container');
+            var newItem = document.createElement('div');
+            newItem.classList.add('educacion-item');
+            newItem.innerHTML = `<div class="form-row">
+                                    <div class="form-group">
+                                        <label for="nivelEstudio">Nivel de estudio</label>
+                                        <select name="nivelEstudio[]">
+                                            <option value="Profesional universitario">Profesional universitario</option>
+                                            <option value="Masterado">Masterado</option>
+                                            <option value="Doctorado">Doctorado</option>
+                                            <option value="Tecnico">Técnico</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="estadoEstudio">Estado de estudio</label>
+                                        <select name="estadoEstudio[]">
+                                            <option value="En curso">En curso</option>
+                                            <option value="Egresado">Egresado</option>
+                                            <option value="Culminado">Culminado</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nombreInstitucion">Nombre de la institución</label>
+                                        <input type="text" name="nombreInstitucion[]">
+                                    </div>
+                                    <button type="button" class="btn btn-danger btn-eliminar" onclick="removeEducacion(this)">Eliminar</button>
+                                  </div>`;
+            container.appendChild(newItem);
+        }
+
+        function removeEducacion(button) {
+            button.parentElement.remove();
+        }
+
+        function addCurso() {
+            var container = document.getElementById('cursosContainer');
+            var newRow = document.createElement('div');
+            newRow.classList.add('input-group', 'mb-3');
+            newRow.innerHTML = `<input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora">
+                                <input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado">
+                                <input type="date" class="form-control" name="fechaCertificado[]">
+                                <button type="button" class="btn btn-danger btn-remove-curso" onclick="removeCurso(this)">Eliminar</button>`;
+            container.appendChild(newRow);
+        }
+
+        function removeCurso(button) {
+            button.parentElement.remove();
+        }
+
+        function addExperiencia() {
+            var container = document.getElementById('experienciaContainer');
+            var newItem = document.createElement('div');
+            newItem.classList.add('experiencia-item', 'mb-3');
+            newItem.innerHTML = `<label for="nombreEmpresa" class="form-label">Nombre de la empresa:</label>
+                                <input type="text" class="form-control" name="nombreEmpresa[]" required>
+
+                                <label for="cargo" class="form-label">Cargo:</label>
+                                <input type="text" class="form-control" name="cargo[]" required>
+
+                                <label for="funciones" class="form-label">Funciones principales:</label>
+                                <textarea class="form-control" name="funciones[]" rows="3" required></textarea>
+
+                                <button type="button" class="btn btn-danger btn-remove-experiencia mt-2" onclick="removeExperiencia(this)">Eliminar</button>`;
+            container.appendChild(newItem);
+        }
+
+        function removeExperiencia(button) {
+            button.parentElement.remove();
         }
     </script>
-    
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // === AGREGAR/MANEJAR CONOCIMIENTOS ===
+        const conocimientosContainer = document.getElementById('conocimientosContainer');
+        document.getElementById('addConocimiento').addEventListener('click', function () {
+            const conocimientoField = document.createElement('div');
+            conocimientoField.className = 'input-group mb-3';
+            conocimientoField.innerHTML = `
+                <input type="text" class="form-control" name="conocimientos[]" placeholder="Ingrese un conocimiento" required>
+                <button type="button" class="btn btn-danger btn-remove-conocimiento">Eliminar</button>
+            `;
+            conocimientosContainer.appendChild(conocimientoField);
+
+            // Botón para eliminar un campo de conocimiento
+            conocimientoField.querySelector('.btn-remove-conocimiento').addEventListener('click', function () {
+                conocimientoField.remove();
+            });
+        });
+
+        // === AGREGAR/MANEJAR CURSOS ===
+        const cursosContainer = document.getElementById('cursosContainer');
+        const addCursoButton = document.getElementById('addCurso');
+        addCursoButton.addEventListener('click', function () {
+            const nuevaFila = document.createElement('div');
+            nuevaFila.classList.add('input-group', 'mb-3');
+            nuevaFila.innerHTML = `
+                <input type="text" class="form-control" name="empresaCertificadora[]" placeholder="Empresa certificadora" required>
+                <input type="text" class="form-control" name="nombreCertificado[]" placeholder="Nombre del certificado" required>
+                <input type="date" class="form-control" name="fechaCertificado[]" required>
+                <button type="button" class="btn btn-danger btn-remove-curso" onclick="eliminarElemento(this)">Eliminar</button>
+            `;
+            cursosContainer.appendChild(nuevaFila);
+        });
+
+        // Función para eliminar un curso
+        function eliminarElemento(button) {
+            button.closest('.input-group').remove();
+        }
+
+        // === AGREGAR/MANEJAR EDUCACIÓN ===
+        document.getElementById('agregar-educacion').addEventListener('click', function () {
+            var educacionContainer = document.getElementById('educacion-container');
+            
+            // Clonamos el primer bloque de educación (sin valores iniciales)
+            var educacionItem = educacionContainer.querySelector('.educacion-item').cloneNode(true);
+            
+            // Limpiamos los campos del nuevo bloque para evitar que se copien los valores previos
+            var inputs = educacionItem.querySelectorAll('input, select');
+            inputs.forEach(function(input) {
+                input.value = '';  // Limpiar los valores de los inputs
+            });
+            
+            // Añadimos el nuevo bloque al contenedor
+            educacionContainer.appendChild(educacionItem);
+            
+            // Añadimos el botón de eliminar al nuevo bloque
+            var eliminarBtn = educacionItem.querySelector('.btn-eliminar');
+            eliminarBtn.addEventListener('click', function () {
+                educacionItem.remove();  // Eliminar el bloque correspondiente
+            });
+        });
+
+        // Función para eliminar un bloque de educación
+        document.getElementById('educacion-container').addEventListener('click', function (event) {
+            if (event.target && event.target.matches('.btn-eliminar')) {
+                var educacionItem = event.target.closest('.educacion-item');
+                educacionItem.remove();
+            }
+        });
+
+        // === AGREGAR/MANEJAR EXPERIENCIA LABORAL ===
+        const experienciaContainer = document.getElementById('experienciaContainer');
+        const addExperienciaButton = document.getElementById('addExperiencia');
+        if (experienciaContainer && addExperienciaButton) {
+            addExperienciaButton.addEventListener('click', function () {
+                const nuevaExperiencia = document.createElement('div');
+                nuevaExperiencia.className = 'mb-3 experiencia-item';
+                nuevaExperiencia.innerHTML = `
+                    <label for="nombreEmpresa" class="form-label">Nombre de la empresa:</label>
+                    <input type="text" class="form-control" name="nombreEmpresa[]" required>
+
+                    <label for="cargo" class="form-label">Cargo:</label>
+                    <input type="text" class="form-control" name="cargo[]" required>
+
+                    <label for="funciones" class="form-label">Funciones principales:</label>
+                    <textarea class="form-control" name="funciones[]" rows="3" required></textarea>
+
+                    <button type="button" class="btn btn-danger btn-remove-experiencia mt-2">Eliminar</button>
+                `;
+                experienciaContainer.appendChild(nuevaExperiencia);
+
+                // Añadir funcionalidad para eliminar el bloque recién creado
+                nuevaExperiencia.querySelector('.btn-remove-experiencia').addEventListener('click', function () {
+                    nuevaExperiencia.remove();
+                });
+            });
+        }
+
+        // === VALIDAR EDAD ===
+        document.getElementById('edad').addEventListener('input', function () {
+            const edad = this.value;
+            const edadMessage = document.getElementById('edadMessage');
+            if (edad < 18 || edad > 70) {
+                if (!edadMessage) {
+                    const message = document.createElement('div');
+                    message.id = 'edadMessage';
+                    message.classList.add('text-danger', 'mt-2');
+                    message.textContent = 'La edad debe estar entre 18 y 70 años.';
+                    this.parentElement.appendChild(message);
+                }
+            } else {
+                if (edadMessage) edadMessage.remove();
+            }
+        });
+
+        // === VALIDAR TELÉFONO ===
+        document.getElementById('telefono').addEventListener('input', function () {
+            const telefono = this.value;
+            const telefonoMessage = document.getElementById('telefonoMessage');
+            if (!/^\d{0,10}$/.test(telefono)) {
+                if (!telefonoMessage) {
+                    const message = document.createElement('div');
+                    message.id = 'telefonoMessage';
+                    message.classList.add('text-danger', 'mt-2');
+                    message.textContent = 'El teléfono debe tener 10 dígitos y solo números.';
+                    this.parentElement.appendChild(message);
+                }
+            } else {
+                if (telefonoMessage) telefonoMessage.remove();
+            }
+        });
+
+        // === VALIDAR FORMULARIO ===
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const errores = [];
+            const conocimientos = document.querySelectorAll('input[name="conocimientos[]"]');
+
+            conocimientos.forEach(input => {
+                if (/\d/.test(input.value)) {
+                    errores.push('Los conocimientos no deben contener números.');
+                }
+            });
+
+            if (errores.length > 0) {
+                e.preventDefault();
+                alert(errores.join('\n'));
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const cedulaInput = document.getElementById('cedula');
+        const cedulaMessage = document.getElementById('cedulaMessage');
+        const infoMessage = document.querySelector('.info-message');
+  
+        // Mostrar un tooltip cuando el usuario pasa el cursor sobre el campo
+        cedulaInput.setAttribute('title', 'Solo se deben ingresar números');
+  
+        // Validación de la cédula en tiempo real
+        cedulaInput.addEventListener('input', function () {
+          const cedula = cedulaInput.value;
+  
+          // Verificar si la cédula tiene exactamente 10 dígitos y solo números
+          if (!/^\d{10}$/.test(cedula)) {
+            cedulaMessage.textContent = 'La cédula debe contener exactamente 10 dígitos numéricos.';
+          } else {
+            cedulaMessage.textContent = '';  // Limpiar el mensaje de error si es válida
+          }
+        });
+  
+        // Validación al enviar el formulario
+        document.getElementById('formulario').addEventListener('submit', function (e) {
+          const cedula = cedulaInput.value;
+  
+          // Verificar si la cédula tiene exactamente 10 dígitos
+          if (!/^\d{10}$/.test(cedula)) {
+            e.preventDefault(); // Evitar el envío del formulario
+            cedulaMessage.textContent = 'La cédula debe contener exactamente 10 dígitos numéricos.';
+          }
+        });
+      });
+
+
+
+
+
+
+
+       // Función para ir a la siguiente sección
+       function nextSection(currentSection, nextSection) {
+        var current = document.getElementById(currentSection);
+        var next = document.getElementById(nextSection);
+
+        // Validación de los campos de la sección actual antes de pasar a la siguiente
+        if (validateSection(currentSection)) {
+            current.style.display = "none";  // Ocultar la sección actual
+            next.style.display = "block";    // Mostrar la siguiente sección
+        } else {
+            alert("Por favor, complete todos los campos obligatorios.");
+        }
+    }
+
+    // Función para regresar a la sección anterior
+    function previousSection(currentSection, previousSection) {
+        var current = document.getElementById(currentSection);
+        var previous = document.getElementById(previousSection);
+
+        current.style.display = "none";  // Ocultar la sección actual
+        previous.style.display = "block"; // Mostrar la sección anterior
+    }
+
+    // Función para validar los campos de una sección
+    function validateSection(sectionId) {
+        var section = document.getElementById(sectionId);
+        var inputs = section.querySelectorAll('input, select, textarea');
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].hasAttribute('required') && !inputs[i].value) {
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+
+
+
+
+   
 </body>
 
 </html>

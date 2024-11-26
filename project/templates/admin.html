@@ -4,80 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página Principal</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Centra los íconos y ajusta el color */
-        .card svg {
-            display: block; /* Hace que el ícono sea un bloque */
-            margin: 0 auto; /* Centra el ícono horizontalmente */
-            fill: #9A616D; /* Cambia el color del ícono */
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Asegura que el contenido dentro de las tarjetas esté centrado */
-        .card-body {
+        h1 {
             text-align: center;
+            margin: 20px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Diseño de las tarjetas */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card svg {
+            width: 50px;
+            height: 50px;
+            fill: #9A616D;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #9A616D;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #7e4d59;
         }
     </style>
 </head>
-{% include 'menu_admin.html' %}
-<body class="bg-light">
-    <div class="container my-5">
-        <h1 class="text-center mb-5">Administración</h1>
-        
-        <!-- Fila de tarjetas -->
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            
+<body>
+    <div class="container">
+        <h1>Administración</h1>
+        <div class="cards">
             <!-- Tarjeta de Categorías -->
-            <div class="col">
-                <div class="card h-100 text-center shadow-sm">
-                   
-                    <div class="card-body">
-                        <h5 class="card-title">Categorías</h5>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-tags-fill" viewBox="0 0 16 16">
-                            <path d="M2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586zm3.5 4a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-                            <path d="M1.293 7.793A1 1 0 0 1 1 7.086V2a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l.043-.043z"/>
-                        </svg>
-                        <p class="card-text">Administra las diferentes categorías disponibles en el sistema.</p>
-                        <a href="{{ url_for('categorias') }}" class="btn btn-primary">Ir a Categorías</a>
-                    </div>
-                </div>
+            <div class="card">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586zm3.5 4a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                    <path d="M1.293 7.793A1 1 0 0 1 1 7.086V2a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l.043-.043z"/>
+                </svg>
+                <h2 class="card-title">Categorías</h2>
+                <p class="card-text">Administra las diferentes categorías disponibles en el sistema.</p>
+                <a href="{{ url_for('categorias') }}" class="btn">Ir a Categorías</a>
             </div>
 
-            <!-- Tarjeta de Puestos -->
-            <div class="col">
-                <div class="card h-100 text-center shadow-sm">
-                  
-                    <div class="card-body">
-                        <h5 class="card-title">Cargos</h5>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-suitcase-lg-fill" viewBox="0 0 16 16">
-                            <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z"/>
-                        </svg>
-                        <p class="card-text">Gestiona los diferentes puestos de trabajo y sus detalles.</p>
-                        <a href="{{ url_for('puestos') }}" class="btn btn-primary">Ir a Cargos</a>
-                    </div>
-                </div>
+            <!-- Tarjeta de Cargos -->
+            <div class="card">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z"/>
+                </svg>
+                <h2 class="card-title">Cargos</h2>
+                <p class="card-text">Gestiona los diferentes puestos de trabajo y sus detalles.</p>
+                <a href="{{ url_for('puestos') }}" class="btn">Ir a Cargos</a>
             </div>
 
             <!-- Tarjeta de Usuarios -->
-            <div class="col">
-                <div class="card h-100 text-center shadow-sm">
-                   
-                    <div class="card-body">
-                        <h5 class="card-title">Usuarios</h5>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
-                        </svg>
-                        <p class="card-text">Administra los usuarios registrados y sus roles en el sistema.</p>
-                        <a href="{{ url_for('crud_usuarios') }}" class="btn btn-primary">Ir a Usuarios</a>
-                    </div>
-                </div>
+            <div class="card">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                </svg>
+                <h2 class="card-title">Usuarios</h2>
+                <p class="card-text">Administra los usuarios registrados y sus roles en el sistema.</p>
+                <a href="{{ url_for('crud_usuarios') }}" class="btn">Ir a Usuarios</a>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS and dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-{% include 'footer.html' %} 
 </html>

@@ -395,35 +395,67 @@ def admin_page():
 def admin():
     return render_template('admin.html')
 # Ruta para ver y agregar categorías
+
+
+
+
+# CATEGORIAS
+# Ruta para crear y listar categorías
 @app.route('/categorias', methods=['GET', 'POST'])
 @login_required
 def categorias():
-    if current_user.id_rol not in [1, 2]:  # Solo admin (1) y RRHH (2) pueden acceder
-        return "No tienes permisos para acceder a esta sección."
-    # Si tiene acceso, se puede cargar la plantilla con las categorías
     if request.method == 'POST':
-        pass  # Lógica para manejar la creación de categorías
-    return render_template('categorias.html', categorias=Categoria.query.all())
+        descripcion = request.form.get('descripcion')
+        
+        # Verificación para evitar descripciones duplicadas
+        if Categoria.query.filter_by(descripcion=descripcion).first():
+            flash('La categoría ya existe.')
+            return redirect(url_for('categorias'))
+        
+        nueva_categoria = Categoria(descripcion=descripcion, estado='Activo')
+        db.session.add(nueva_categoria)
+        db.session.commit()
+        flash('Categoría creada exitosamente.')
+        return redirect(url_for('categorias'))
+
+    categorias = Categoria.query.all()
+    return render_template('categorias.html', categorias=categorias)
+
+
 
 # Ruta para editar una categoría
 @app.route('/editar_categoria/<int:id_categoria>', methods=['GET', 'POST'])
 @login_required
 def editar_categoria(id_categoria):
-    if current_user.id_rol not in [1, 2]:  # Solo admin y RRHH pueden acceder
-        return "No tienes permisos para acceder a esta sección."
-    # Lógica para cargar y actualizar la categoría
     categoria = Categoria.query.get_or_404(id_categoria)
+    
+    if request.method == 'POST':
+        categoria.descripcion = request.form.get('descripcion')
+        categoria.estado = request.form.get('estado')
+        
+        db.session.commit()
+        flash('Categoría actualizada exitosamente.')
+        return redirect(url_for('categorias'))
+
     return render_template('editar_categoria.html', categoria=categoria)
 
 # Ruta para eliminar una categoría
 @app.route('/eliminar_categoria/<int:id_categoria>', methods=['POST'])
 @login_required
 def eliminar_categoria(id_categoria):
-    if current_user.id_rol not in [1, 2]:  # Solo admin y RRHH pueden acceder
-        return "No tienes permisos para acceder a esta sección."
-    # Lógica para eliminar la categoría si no hay puestos asociados
+    categoria = Categoria.query.get_or_404(id_categoria)
+    puestos_asociados = Puesto.query.filter_by(id_categoria=id_categoria).all()
+    
+    if puestos_asociados:
+        mensaje = "No se puede eliminar la categoría porque está en uso. Puestos asociados:"
+        puestos = [p.descripcion for p in puestos_asociados]  # Asume que `descripcion` es el campo del puesto
+        return render_template("error.html", mensaje=mensaje, puestos=puestos)
+    
+    # Si no hay puestos asociados, procede a eliminar la categoría
+    db.session.delete(categoria)
+    db.session.commit()
+    flash('Categoría eliminada exitosamente.')
     return redirect(url_for('categorias'))
-
 
 
 ######################### Rutas usuarios #########################
@@ -515,9 +547,11 @@ def generar_pdf():
     descripcion = request.form.get('descripcion')
     
     # Educación
-    nivel_estudio = request.form.get('nivelEstudio')
-    estado_estudio = request.form.get('estadoEstudio')
-    nombre_institucion = request.form.get('nombreInstitucion')
+    # Educación
+    niveles_estudio = request.form.getlist('nivelEstudio[]')
+    estados_estudio = request.form.getlist('estadoEstudio[]')
+    nombres_instituciones = request.form.getlist('nombreInstitucion[]')
+
 
     # Habilidades Técnicas
     habilidades = request.form.getlist('habilidades[]')
@@ -533,9 +567,11 @@ def generar_pdf():
     ))
 
     # Experiencia laboral
-    nombre_empresa = request.form.get('nombreEmpresa')
-    cargo = request.form.get('cargo')
-    funciones = request.form.get('funciones')
+    
+    # Experiencia laboral
+    nombre_empresa = request.form.getlist('nombreEmpresa[]')
+    cargo = request.form.getlist('cargo[]')
+    funciones = request.form.getlist('funciones[]')
 
     # Generar PDF
     pdf_buffer = BytesIO()
@@ -572,23 +608,26 @@ def generar_pdf():
     elements.append(Spacer(1, 12))
 
     # Educación
+    # Educación
     elements.append(Paragraph("Educación", styles['Heading2']))
-    education_data = [
-        ["Nivel de estudio", nivel_estudio],
-        ["Estado de estudio", estado_estudio],
-        ["Nombre de la institución", nombre_institucion]
-    ]
-    table = Table(education_data, colWidths=[150, 300])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#f5f5f5")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor("#875A7B")),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
-    ]))
-    elements.append(table)
-    elements.append(Spacer(1, 12))
+    for i in range(len(niveles_estudio)):
+        education_data = [
+            ["Nivel de estudio", niveles_estudio[i]],
+            ["Estado de estudio", estados_estudio[i]],
+            ["Nombre de la institución", nombres_instituciones[i]]
+        ]
+        table = Table(education_data, colWidths=[150, 300])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#f5f5f5")),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor("#875A7B")),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 12))
+
 
     # Habilidades Técnicas
     elements.append(Paragraph("Habilidades Técnicas", styles['Heading2']))
@@ -609,23 +648,25 @@ def generar_pdf():
     elements.append(Spacer(1, 12))
 
     # Experiencia Laboral
+    # Experiencia Laboral
     elements.append(Paragraph("Experiencia Laboral", styles['Heading2']))
-    work_data = [
-        ["Nombre de la Empresa", nombre_empresa],
-        ["Cargo", cargo],
-        ["Funciones", funciones],
-    ]
-    table = Table(work_data, colWidths=[150, 300])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#f5f5f5")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor("#875A7B")),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
-    ]))
-    elements.append(table)
-    elements.append(Spacer(1, 12))
+    for i in range(len(nombre_empresa)):
+        work_data = [
+            ["Nombre de la Empresa", nombre_empresa[i]],
+            ["Cargo", cargo[i]],
+            ["Funciones", funciones[i]],
+        ]
+        table = Table(work_data, colWidths=[150, 300])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#f5f5f5")),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor("#875A7B")),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 12))
 
 
 

@@ -4,59 +4,186 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Lista de Puestos</title>
-    <!-- Enlace a Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilo general */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Contenedor principal */
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: #9A616D;
+        }
+
+        /* Estilo para la tarjeta de crear nuevo puesto */
+        .card {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        /* Formulario */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group input[type="file"] {
+            padding: 5px;
+        }
+
+        /* Botón de crear puesto */
+        button[type="submit"] {
+            background-color: #9A616D;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #8c4e5e;
+        }
+
+        /* Tabla de puestos existentes */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #9A616D;
+            color: white;
+        }
+
+        table td img {
+            width: 100px;
+        }
+
+        /* Botones de acciones */
+        .btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-warning:hover {
+            background-color: #f1c40f;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .d-flex {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
     {% include 'menu_admin.html' %}
-    <div class="container mt-5">
+    {% include 'regresar.html' %}
+    <div class="container">
         <h1 class="mb-4">Lista de Puestos</h1>
 
         <!-- Formulario para crear un nuevo puesto -->
-        <form method="POST" action="{{ url_for('puestos') }}" enctype="multipart/form-data" class="mb-5">
-            <!-- Campo de descripción -->
-            <div class="form-group">
-                <label for="descripcion">Descripción:</label>
-                <input type="text" class="form-control" name="descripcion" 
-                       required pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" 
-                       title="Solo se permiten letras y espacios.">
+        <div class="card mb-5">
+            <div class="card-body">
+                <h5 class="card-title">Crear Nuevo Puesto</h5>
+                <form method="POST" action="{{ url_for('puestos') }}" enctype="multipart/form-data">
+                    <!-- Campo de descripción -->
+                    <div class="form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <input type="text" class="form-control" name="descripcion" 
+                               required pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" 
+                               title="Solo se permiten letras y espacios.">
+                    </div>
+                    <!-- Campo de perfil -->
+                    <div class="form-group">
+                        <label for="perfil">Perfil:</label>
+                        <input type="text" class="form-control" name="perfil" 
+                               required pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" 
+                               title="Solo se permiten letras y espacios.">
+                    </div>
+                    <!-- Campo de requisitos -->
+                    <div class="form-group">
+                        <label for="requisitos">Requisitos:</label>
+                        <input type="text" class="form-control" name="requisitos" 
+                               required pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" 
+                               title="Solo se permiten letras y espacios.">
+                    </div>
+                    <!-- Campo de categoría -->
+                    <div class="form-group">
+                        <label for="id_categoria">Categoría:</label>
+                        <select name="id_categoria" class="form-control" required>
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria.id_categoria }}">{{ categoria.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <!-- Campo de imagen -->
+                    <div class="form-group">
+                        <label for="imagen">Imagen:</label>
+                        <input type="file" class="form-control" name="imagen" accept="image/*" required>
+                    </div>
+                    <!-- Botón de crear -->
+                    <button type="submit" class="btn" style="background-color: #9A616D; color: white; border-color: #9A616D;">
+                        Crear Puesto
+                    </button>
+                </form>
             </div>
-            <!-- Campo de perfil -->
-            <div class="form-group">
-                <label for="perfil">Perfil:</label>
-                <input type="text" class="form-control" name="perfil" 
-                       required pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" 
-                       title="Solo se permiten letras y espacios.">
-            </div>
-            <!-- Campo de requisitos -->
-            <div class="form-group">
-                <label for="requisitos">Requisitos:</label>
-                <input type="text" class="form-control" name="requisitos" 
-                       required pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" 
-                       title="Solo se permiten letras y espacios.">
-            </div>
-            <!-- Campo de categoría -->
-            <div class="form-group">
-                <label for="id_categoria">Categoría:</label>
-                <select name="id_categoria" class="form-control" required>
-                    {% for categoria in categorias %}
-                        <option value="{{ categoria.id_categoria }}">{{ categoria.descripcion }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <!-- Campo de imagen -->
-            <div class="form-group">
-                <label for="imagen">Imagen:</label>
-                <input type="file" class="form-control" name="imagen" accept="image/*" required>
-            </div>
-            <!-- Botón de crear -->
-            <button type="submit" class="btn btn-primary">Crear Puesto</button>
-        </form>
+        </div>
 
         <!-- Tabla de puestos existentes -->
         <h2>Puestos Existentes</h2>
-        <table class="table table-bordered table-striped">
-            <thead class="thead-dark">
+        <table>
+            <thead>
                 <tr>
                     <th>ID</th>
                     <th>Descripción</th>
@@ -77,27 +204,31 @@
                     <td>{{ puesto.categoria.descripcion }}</td>
                     <td>
                         {% if puesto.imagen %}
-                            <img src="{{ puesto.imagen }}" alt="Imagen del puesto" width="100">
+                            <img src="{{ puesto.imagen }}" alt="Imagen del puesto">
                         {% else %}
                             No hay imagen
                         {% endif %}
                     </td>
                     <td>
-                        <a href="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" class="btn btn-warning btn-sm">Editar</a>
-                        <form action="{{ url_for('eliminar_puesto', id=puesto.id_puesto) }}" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
+                        <!-- Contenedor con clase d-flex para alinear los botones horizontalmente -->
+                        <div class="d-flex">
+                            <!-- Botón de editar con ícono -->
+                            <a href="{{ url_for('editar_puesto', id=puesto.id_puesto) }}" class="btn btn-warning">
+                                Editar
+                            </a>
+                            <!-- Botón de eliminar con ícono -->
+                            <form action="{{ url_for('eliminar_puesto', id=puesto.id_puesto) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este puesto?');">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
-    <!-- Enlace a Bootstrap JS y dependencias -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     {% include 'footer.html' %}
 </body>

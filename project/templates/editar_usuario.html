@@ -6,25 +6,64 @@
     <title>Editar Usuario</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        /* Fondo suave para el contenedor */
+        .container {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        /* Título centrado y estilizado */
+        h1 {
+            text-align: center;
+            color: #9A616D; /* Color específico */
+            font-weight: bold;
+        }
+
+        /* Mensajes de error */
         .error-message {
             color: red;
             font-size: 0.875em;
+        }
+
+        /* Botón principal */
+        .btn-primary {
+            background-color: #9A616D;
+            border-color: #9A616D;
+        }
+
+        /* Botón secundario */
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        /* Botón con hover */
+        .btn-primary:hover {
+            background-color: #7a4e57;
+            border-color: #7a4e57;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
         }
     </style>
 </head>
 <body>
     {% include 'menu_admin.html' %}
     <div class="container mt-4">
+        <!-- Título centrado -->
         <h1>Editar Usuario</h1>
 
-        <!-- Mensaje de éxito o error 
+        <!-- Mensaje de éxito o error -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
                     <div class="alert alert-{{ category }}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
-        {% endwith %}-->
+        {% endwith %}
 
         <form id="editUserForm" method="POST" novalidate>
             <div class="form-group">
@@ -42,7 +81,7 @@
                 <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}" required>
                 <span id="emailError" class="error-message"></span>
             </div>
-            <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
+            <button type="submit" class="btn" style="background-color: #9A616D; color: white; border: none;">Actualizar Usuario</button>
         </form>
         <a href="{{ url_for('listar_usuarios') }}" class="btn btn-secondary mt-3">Volver a la lista de usuarios</a>
     </div>
